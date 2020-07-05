@@ -1,7 +1,26 @@
+# ansible-playbook -i inventory.ini rpi-homeassistant.yml
+# semaphore / cli argument example for vars_prompt
+#   ex: ["-e","hostname='your_hostname' wifi_ssid='your_ssid' wifi_password='your_password'"] 
 ---
 - hosts: homeassistant
   remote_user: pi
   become: true
+  vars:
+      wifi_country: "US"
+      locale: "en_US.UTF-8"
+      keyboard_layout: "us"
+      timezone: US/Eastern
+
+  vars_prompt:
+    - name: hostname
+      prompt: "please enter a hostname for your new device:"
+      private: no
+#    - name: wifi_ssid
+#      prompt: "please enter the WiFi SSID for your new device:"
+#      private: no
+#    - name: wifi_password
+#      prompt: "please enter the WiFi password for your new device:"
+#      private: yes
 
   tasks:
     - name: Upgrade all packages to the latest version
@@ -24,8 +43,33 @@
     # setup wpa_supplicant.conf (maybe?)
 
     # set time zone
+    - name: update tzdata
+      become: true
+      file:
+        src: /usr/share/zoneinfo/{{ timezone }}
+        dest: /etc/localtime
+        owner: root
+        group: root
+        state: link
 
-    # set hostname
+    # set the hostname
+    - name: Set the hostname
+      become: yes
+      file:
+          path: /etc/hostname
+          mode: 644
+          group: root
+          owner: root
+          content: |
+            {{ hostname }}
+
+    # Set the hostname in /etc/hosts too
+    - name: Set the other hostname
+      become: yes
+      replace:
+        path: /etc/hosts
+        regexp: '(\s+)raspberrypi$'
+        replace: '\1{{ hostname }}'
 
     # run rpi-update
 
