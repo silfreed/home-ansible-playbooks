@@ -40,7 +40,7 @@
         pkg:
           - docker.io
 
-    # setup wpa_supplicant.conf (maybe?)
+    # FIXME: setup wpa_supplicant.conf (maybe?)
 
     # set time zone
     - name: update tzdata
@@ -71,16 +71,34 @@
         regexp: '(\s+)raspberrypi$'
         replace: '\1{{ hostname }}'
 
-    # run rpi-update
+    # FIXME: run rpi-update
 
     # enable sshd
+    - name: ensure sshd is enabled
+      systemd:
+        name: ssh
+        state: started
+        enabled: yes
 
     # copy ssh key to pi user
+    - name: copy my ssh key to pi user
+      authorized_key:
+        user: pi
+        state: present
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
     # change pi user password
+    # https://stackoverflow.com/questions/33972756/ansible-to-generate-random-passwords-automatically-for-users
+    - name: set a new password for the default "pi" account
+      become: yes
+      user:
+        name: "{{ item }}"
+        password: "{{ lookup('password', 'credentials/' + item + '/password.txt encrypt=md5_crypt') }}"
+      with_items: ['pi']
 
-    # install home-assistant docker image
+
+    # FIXME: install home-assistant docker image
     # homeassistant/home-assistant
     #
-    # setup homeassistant systemd unit
+    # FIXME: setup homeassistant systemd unit
 
