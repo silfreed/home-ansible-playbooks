@@ -10,6 +10,7 @@
       locale: "en_US.UTF-8"
       keyboard_layout: "us"
       timezone: US/Eastern
+      haconfigdir: "/home/homeassistant/haconfig"
 
   vars_prompt:
     - name: hostname
@@ -96,9 +97,48 @@
         password: "{{ lookup('password', 'credentials/' + item + '/password.txt encrypt=md5_crypt') }}"
       with_items: ['pi']
 
+    # setup homeassistant config directory
+    - name: setup homeassistant user for config
+      user:
+        name: "homeassistant"
+    
+    - name: setup homeassistant config dir
+      file:
+        path: "{{ haconfigdir }}"
+        state: directory
+        mode: 0644
+        owner: homeassistant
 
-    # FIXME: install home-assistant docker image
-    # homeassistant/home-assistant
-    #
-    # FIXME: setup homeassistant systemd unit
+    # setup homeassistant systemd unit
+    - name: create homeassistant docker config
+      become: yes
+      copy:
+          dest: /etc/systemd/system/docker@homeassistant.service
+          mode: 0644
+          owner: root
+          group: root
+          content: |
+            [Unit]
+            Description=Home Assistant Container
+            After=docker.service
+            Requires=docker.service
+
+            # https://blog.container-solutions.com/running-docker-containers-with-systemd
+            [Service]
+            TimeoutStartSec=0
+            Restart=always
+            ExecStartPre=--/usr/bin/docker stop %i
+            ExecStartPre=--/usr/bin/docker rm %i
+            ExecStartPre=/usr/bin/docker pull homeassistant/home-assistant:stable
+            ExecStart=/usr/bin/docker run --rm --name %i \
+              -v {{ haconfigdir }}:/config \
+              -v /etc/localtime:/etc/localtime:ro \
+              --net=host \
+              homeassistant/home-assistant:stable
+
+            [Install]
+            WantedBy=multi-user.target
+
+    - name: start docker homeassistant
+      systemd: state=started name=docker@homeassistant daemon_reload=yes
 
