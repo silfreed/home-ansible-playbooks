@@ -1,0 +1,42 @@
+---
+- hosts: homeassistant
+  remote_user: pi
+  become: true
+
+  tasks:
+    - name: Upgrade all packages to the latest version
+      apt:
+        name: "*"
+        state: latest
+
+    - name: install base packages
+      apt:
+        state: latest
+        pkg:
+          - vim
+
+    - name: docker environment
+      apt:
+        state: latest
+        pkg:
+          - docker.io
+
+    # setup wpa_supplicant.conf (maybe?)
+
+    # set time zone
+
+    # set hostname
+
+    # run rpi-update
+
+    # enable sshd
+
+    # copy ssh key to pi user
+
+    # change pi user password
+
+    # install home-assistant docker image
+    # homeassistant/home-assistant
+    #
+    # setup homeassistant systemd unit
+
