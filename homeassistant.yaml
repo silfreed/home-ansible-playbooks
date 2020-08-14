@@ -1,0 +1,8 @@
+---
+- hosts: homeassistant
+  remote_user: pi
+  become: true
+  roles:
+    - common
+    - docker
+    - homeassistant

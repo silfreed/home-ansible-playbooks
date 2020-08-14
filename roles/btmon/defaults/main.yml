@@ -1,0 +1,5 @@
+---
+mysql_host: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section=(hostname | upper), field='mysql_host') }}"
+mysql_user: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section=(hostname | upper), field='mysql_user') }}"
+mysql_pass: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section=(hostname | upper), field='mysql_pass') }}"
+oem_token: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section=(hostname | upper), field='oem_token') }}"

@@ -1,0 +1,7 @@
+---
+- hosts: btmon
+  remote_user: pi
+  become: true
+  roles:
+    - common
+    - btmon

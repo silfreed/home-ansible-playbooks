@@ -1,0 +1,32 @@
+---
+# setup btmon config directory
+- name: setup btmon user for config
+  user:
+    name: "btmon"
+
+- name: get btmon user info
+  getent:
+    database: passwd
+    key: "btmon"
+
+- name: create btmon config
+  become: yes
+  template:
+    src: btmon.ini.j2
+    dest: /home/btmon/btmon.ini
+    mode: 0644
+    owner: btmon
+    group: btmon
+
+# setup btmon systemd unit
+- name: create btmon systemd unit
+  become: yes
+  copy:
+    src: btmon.service 
+    dest: /etc/systemd/system/btmon.service
+    mode: 0644
+    owner: root
+    group: root
+
+- name: start btmon
+  systemd: state=started name=btmon daemon_reload=yes

@@ -1,0 +1,7 @@
+---
+- name: docker environment
+  tags: docker
+  apt:
+    state: latest
+    pkg:
+      - docker.io

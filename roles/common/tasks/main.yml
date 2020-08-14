@@ -1,0 +1,75 @@
+---
+- name: Upgrade all packages to the latest version
+  apt:
+    name: "*"
+    state: latest
+
+- name: install base packages
+  apt:
+    state: latest
+    pkg:
+      - vim
+
+# set time zone
+- name: update tzdata
+  become: true
+  file:
+    src: /usr/share/zoneinfo/{{ timezone }}
+    dest: /etc/localtime
+    owner: root
+    group: root
+    state: link
+
+# set the hostname
+- name: Set the hostname
+  become: yes
+  file:
+      path: /etc/hostname
+      mode: 644
+      group: root
+      owner: root
+      content: |
+        {{ hostname }}
+
+# Set the hostname in /etc/hosts too
+- name: Set the other hostname
+  become: yes
+  replace:
+    path: /etc/hosts
+    regexp: '(\s+)raspberrypi$'
+    replace: '\1{{ hostname }}'
+
+# FIXME: run rpi-update
+
+# enable sshd
+- name: ensure sshd is enabled
+  systemd:
+    name: ssh
+    state: started
+    enabled: yes
+
+# copy ssh key to pi user
+- name: copy my ssh key to pi user
+  authorized_key:
+    user: pi
+    state: present
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+# - debug:
+#    msg: 
+#     - "hostname: {{ hostname | upper}}"
+#     - "password: {{ lookup('onepassword', 'HKRoad Ansible Passwords', section=(hostname | upper), field='pi') }}"
+#   tags: password
+
+# change pi user password
+# https://stackoverflow.com/questions/33972756/ansible-to-generate-random-passwords-automatically-for-users
+- name: set a non-default password for the "pi" account
+  tags: password
+  become: yes
+  user:
+    name: "{{ item.user }}"
+    password: "{{ item.password }}"
+  with_items:
+    - { user: 'pi', password: "{{ \
+      lookup('onepassword', 'HKRoad Ansible Passwords', section=(hostname | upper), field='pi') \
+        | password_hash('sha512', 65534 | random(seed=hostname) | string) }}"}

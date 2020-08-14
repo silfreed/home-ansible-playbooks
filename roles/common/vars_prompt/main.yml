@@ -1,0 +1,4 @@
+---
+- name: hostname
+  prompt: "please enter a hostname for your new device:"
+  private: no

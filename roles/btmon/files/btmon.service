@@ -1,0 +1,14 @@
+[Unit]
+Description=btmon
+After=multi-user.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/btmon
+ExecStart=/usr/bin/env python btmon.py -c btmon.ini --serial
+User=btmon
+Group=btmon
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
