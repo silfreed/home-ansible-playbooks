@@ -1,0 +1,31 @@
+---
+- hosts: homeassistant
+  remote_user: pi
+  become: true
+  vars:
+    restic_create_cron: true
+    restic_repos:
+      remote:
+        location: s3:s3.amazonaws.com/restic-silfreed-hkroad
+        password: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='DEFAULTS', field='Restic') }}"
+        aws_access_key: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section=(hostname | upper), field='S3-restic-aws-key') }}"
+        aws_secret_access_key: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section=(hostname | upper), field='S3-restic-aws-secret') }}"
+        aws_default_region: us-east-2
+        init: true
+    restic_backups:
+      - name: homeassistant
+        src: /home/homeassistant/
+        repo: remote
+        keep_last: 4
+        prune: true
+        scheduled: true
+        schedule_minute: 0
+        schedule_hour: 3
+        schedule_weekday: "*"
+        schedule_month: "*"
+
+  roles:
+    - common
+    - docker
+    - ansible.restic
+    - homeassistant
