@@ -25,7 +25,7 @@
         schedule_month: "*"
 
   roles:
-    - common
+    - rpi-common
     - docker
     - ansible.restic
     - homeassistant
