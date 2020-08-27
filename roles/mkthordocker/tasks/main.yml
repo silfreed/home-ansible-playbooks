@@ -1,0 +1,63 @@
+---
+# - name: debug all the things
+#   debug:
+#     msg: "{{ item.name }} of {{ item.docker_hub_image }} ({{ item.description }})"
+#   loop: "{{ mkthordocker }}"
+
+# - name: debug lvm sub-list
+#   debug:
+#     msg: "{{ item.1 }}"
+#   loop: "{{ mkthordocker | subelements('lvm') }}"
+
+
+# - name: setup user for file ownership
+#   user:
+#     name: "FIXME"
+#     # FIXME: Loop over users needed
+
+# - name: setup mount dir and user ownership
+#   file:
+#     path: "{{ haconfigdir }}"
+#     state: directory
+#     mode: 0644
+#     owner: homeassistant
+
+# - name: get user info
+#   getent:
+#     database: passwd
+#     key: "homeassistant"
+
+# - name: make lvm volume
+# FIXME: volume size
+# FIXME: volume name
+# FIXME: vg name
+
+- name: create LVM mountpoint systemd unit file
+  become: yes
+  template:
+    src: mnt-.service.j2
+    dest: "/etc/systemd/system/mnt-{{ item.1.name }}.mount"
+    mode: 0644
+    owner: root
+    group: root
+  loop: "{{ mkthordocker | subelements('lvm') }}"
+
+- name: start docker systemd unit 
+  become: yes
+  systemd: state=started name="mnt-{{ item.1.name }}.mount" daemon_reload=yes
+  loop: "{{ mkthordocker | subelements('lvm') }}"
+
+- name: create docker systemd unit file
+  become: yes
+  template:
+    src: docker@.service.j2
+    dest: "/etc/systemd/system/docker@{{ item.name }}.service"
+    mode: 0644
+    owner: root
+    group: root
+  loop: "{{ mkthordocker }}"
+
+- name: start docker systemd unit 
+  become: yes
+  systemd: state=started name="docker@{{ item.name }}" daemon_reload=yes
+  loop: "{{ mkthordocker }}"

@@ -1,0 +1,29 @@
+[Unit]
+Description={{ item.description }}
+After=docker.service
+Requires=docker.service{% for lvm in item.lvm if item.lvm is defined %} mnt-{{ lvm.name }}.mount{% endfor %}{{''}}
+
+# https://blog.container-solutions.com/running-docker-containers-with-systemd
+[Service]
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=-/usr/bin/docker stop %i
+ExecStartPre=-/usr/bin/docker rm %i
+ExecStartPre=/usr/bin/docker pull {{ item.docker_hub_image }}
+ExecStart=/usr/bin/docker run --rm --name %i \
+  {{ item.docker_options|indent(width=2) if 'docker_options' in item }}
+{%- if 'docker_ports' in item %}
+{%- for k,v in item.docker_ports.items() %}
+  -p {{ k }}:{{ v }} \
+{% endfor %}
+{% endif %}
+{%- for k,v in item.docker_env.items() if 'docker_env' in item %}
+  -e {{ k }}={{ v }} \
+{% endfor %}
+{%- for k,v in item.docker_vols.items() if 'docker_vols' in item %}
+  -v {{ k }}:{{ v }} \
+{% endfor %}
+  {{ item.docker_hub_image }}
+
+[Install]
+WantedBy=multi-user.target

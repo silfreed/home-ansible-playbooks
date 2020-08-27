@@ -1,3 +1,4 @@
 ---
 - import_playbook: btmon.yml
 - import_playbook: homeassistant.yaml
+- import_playbook: thor.yml

@@ -1,0 +1,141 @@
+---
+- hosts: thor
+  remote_user: silfreed
+  vars:
+    mkthordocker:
+      - name: influxdb
+        docker_hub_image: influxdb
+        description: "InfluxDB Container"
+        lvm:
+          - name: influxdb
+            size: 50G
+            vg: 12tb_2020
+        docker_env:
+          # PUID: "{{ getent_passwd["influxdb"][1] }}"
+          # GUID: "{{ getent_passwd["influxdb"][2] }}"
+          INFLUXDB_DB: db0
+          INFLUXDB_ADMIN_USER: admin
+          INFLUXDB_ADMIN_PASSWORD: supersecretpassword
+          INFLUXDB_USER: telegraf
+          INFLUXDB_USER_PASSWORD: secretpassword
+        docker_ports:
+          8086: 8086
+        docker_vols:
+          "/mnt/influxdb": "/var/lib/influxdb"
+        docker_options: |
+          --net=host \
+
+      - name: minecraft-survival
+        docker_hub_image: itzg/minecraft-server
+        description: "Minecraft Survival Container"
+        lvm:
+          - name: minecraft
+            size: 50G
+            vg: 500gb_2020_ssd
+            mount_options: discard
+        docker_env:
+          TZ: America/New_York
+          UID: 518 # FIXME: lookup UID
+          GID: 526 # FIXME: lookup GID
+          # VERSION: SNAPSHOT
+          MEMORY: 2G
+        docker_ports:
+          25565: 25565
+        docker_vols:
+          "/mnt/minecraft/survival": "/data"
+        docker_options: |
+          --network=lan5 \
+          --ip=192.168.0.194 \
+
+      - name: plexmediaserver
+        docker_hub_image: plexinc/pms-docker
+        description: "Plex Media Server Container"
+        lvm:
+          - name: plexmediaserver
+            size: 100G
+            vg: 12tb_2020
+          - name: tv_shows
+            size: 1.5T
+            vg: 12tb_2020
+          - name: movies
+            size: 400G
+            vg: 12tb_2020
+          - name: personal_movies
+            size: 400G
+            vg: 12tb_2020
+          - name: music
+            size: 100G
+            vg: 12tb_2020
+          - name: photos
+            size: 400G
+            vg: 12tb_2020
+        docker_env:
+          TZ: "America/New_York"
+          PLEX_CLAIM: "claim-bRrsrbVS6hxu6eriWK1b"
+          PLEX_UID: 475 # FIXME: lookup UID
+          PLEX_GID: 475 # FIXME: lookup GID
+        docker_vols:
+          "/mnt/plexmediaserver": "/config"
+          "/mnt/tv_shows": "/tv-seasons"
+          "/mnt/movies": "/movies"
+          "/mnt/personal_movies": "/home-movies"
+          "/mnt/music": "/music"
+          "/mnt/photos/public": "/photos"
+        docker_options: |
+          --network=lan5 \
+          --ip=192.168.0.193 \
+          -h HKRoad \
+
+      - name: unifi
+        docker_hub_image: jacobalberty/unifi:latest
+        description: "Unifi Controller Container"
+        lvm:
+          - name: unifi
+            size: 50G
+            vg: 12tb_2020
+        docker_env:
+          TZ: 'America/New_York'
+          RUNAS_UID0: false
+          UNIFI_UID: 1001 # FIXME: Lookup UID
+          UNIFI_GID: 1001 # FIXME: Lookup GID
+        docker_ports:
+          8080: 8080
+          8443: 8443
+          3478: 3478/udp
+          10001: 10001/udp
+        docker_vols:
+          "/mnt/unifi": "/unifi"
+
+      - name: uvc
+        docker_hub_image: pducharme/unifi-video-controller:latest
+        description: "Unifi Video Controller Container"
+        lvm:
+          - name: uvc
+            size: 750G
+            vg: 12tb_2020
+        docker_env:
+          TZ: 'America/New_York'
+          PUID: 1002 # FIXME: Lookup UID
+          PGID: 1002 # FIXME: Lookup GID
+        docker_ports:
+          7442: 7442
+          7443: 7443
+          7444: 7444
+          7445: 7445
+          7446: 7446
+          7447: 7447
+          7080: 7080
+          6666: 6666
+          1935: 1935
+        docker_vols:
+          "/mnt/uvc": "/var/lib/unifi-video"
+          "/mnt/uvc/videos": "/usr/lib/unifi-video/data/videos"
+        docker_options: |
+          --net=lan5 \
+          --ip=192.168.0.192 \
+          --cap-add SYS_ADMIN \
+          --cap-add DAC_READ_SEARCH \
+
+  
+  roles:
+    - mkthordocker
