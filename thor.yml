@@ -3,6 +3,9 @@
   remote_user: silfreed
   vars:
     mkthordocker:
+      # FIXME: set up grafana container
+      # - name: grafana
+
       - name: influxdb
         docker_hub_image: influxdb
         description: "InfluxDB Container"
