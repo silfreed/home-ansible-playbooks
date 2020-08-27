@@ -9,28 +9,71 @@
 #     msg: "{{ item.1 }}"
 #   loop: "{{ mkthordocker | subelements('lvm') }}"
 
+- name: create user for LVM mount
+  become: yes
+  user:
+    name: "{{item.1.user}}"
+    system: yes
+  loop: "{{ mkthordocker | subelements('lvm') }}"
+  when: item.1.user is defined
 
-# - name: setup user for file ownership
-#   user:
-#     name: "FIXME"
-#     # FIXME: Loop over users needed
+# FIXME: how do we ensure the user, group, and mode _AFTER_ the volume is mounted?
+- name: create LVM mount
+  become: yes
+  file:
+    path: "/mnt/{{ item.1.name }}"
+    state: directory
+    mode: "{{ item.1.mode|default('0750') }}"
+    owner: "{{ item.1.user|default(omit) }}"
+  loop: "{{ mkthordocker | subelements('lvm') }}"
 
-# - name: setup mount dir and user ownership
-#   file:
-#     path: "{{ haconfigdir }}"
-#     state: directory
-#     mode: 0644
-#     owner: homeassistant
+- name: collect lvs info
+  tags: lvs
+  become: true
+  check_mode: no
+  command: lvs --reportformat=json
+  ignore_errors: true
+  register: result
 
-# - name: get user info
-#   getent:
-#     database: passwd
-#     key: "homeassistant"
+# - name: debug lvs result
+#   debug:
+#     var: result
 
-# - name: make lvm volume
-# FIXME: volume size
-# FIXME: volume name
-# FIXME: vg name
+- name: set lvs facts
+  tags: lvs
+  set_fact:
+    lvs: "{{ result.stdout | from_json }}"
+  when: result is defined
+
+# - name: debug lvs fact
+#   tags: lvs
+#   debug:
+#     var: lvs
+# - name: debug lvs lv_name list
+#   tags: lvs
+#   debug:
+#     var: lvs.report[0].lv|map(attribute='lv_name')|list
+    
+- name: make lvm volume
+  tags: mklvm
+  become: true
+  command: lvcreate -L {{ item.1.size }} {{ item.1.vg }} -n {{ item.1.name }}
+  # debug:
+  #   msg: "lvcreate -L {{ item.1.size }} {{ item.1.vg }} -n {{ item.1.name }}"
+  loop: "{{ mkthordocker | subelements('lvm') }}"
+  when: item.1.name not in lvs.report[0].lv|map(attribute='lv_name')|list
+
+# FIXME: format the LVM volume
+- name: format lvm volume
+  tags: mklvm
+  become: true
+  command: mke2fs /dev/{{ item.1.vg }}/{{ item.1.name }}
+  # debug:
+  #   msg: "mke2fs /dev/{{ item.1.vg }}/{{ item.1.name }}"
+  loop: "{{ mkthordocker | subelements('lvm') }}"
+  when: item.1.name not in lvs.report[0].lv|map(attribute='lv_name')|list
+
+# FIXME: detect if LVM volume size is different from configured
 
 - name: create LVM mountpoint systemd unit file
   become: yes
@@ -40,11 +83,6 @@
     mode: 0644
     owner: root
     group: root
-  loop: "{{ mkthordocker | subelements('lvm') }}"
-
-- name: start docker systemd unit 
-  become: yes
-  systemd: state=started name="mnt-{{ item.1.name }}.mount" daemon_reload=yes
   loop: "{{ mkthordocker | subelements('lvm') }}"
 
 - name: create docker systemd unit file
@@ -57,7 +95,23 @@
     group: root
   loop: "{{ mkthordocker }}"
 
+# FIXME: only force reload when unit files change
+- name: force systemd daemon reload when unit files change
+  systemd:
+    daemon_reload: yes
+
+- name: start LVM mountpoint systemd service
+  become: yes
+  systemd:
+    state: started
+    enabled: yes
+    name: "mnt-{{ item.1.name }}.mount"
+  loop: "{{ mkthordocker | subelements('lvm') }}"
+
 - name: start docker systemd unit 
   become: yes
-  systemd: state=started name="docker@{{ item.name }}" daemon_reload=yes
+  systemd:
+    state: started
+    enabled: yes
+    name: "docker@{{ item.name }}.service"
   loop: "{{ mkthordocker }}"

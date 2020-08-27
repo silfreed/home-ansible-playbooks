@@ -15,14 +15,17 @@
           # GUID: "{{ getent_passwd["influxdb"][2] }}"
           INFLUXDB_DB: db0
           INFLUXDB_ADMIN_USER: admin
-          INFLUXDB_ADMIN_PASSWORD: supersecretpassword
+          INFLUXDB_ADMIN_PASSWORD: supersecretpassword # FIXME: lookup onepassword
           INFLUXDB_USER: telegraf
-          INFLUXDB_USER_PASSWORD: secretpassword
+          INFLUXDB_USER_PASSWORD: secretpassword # FIXME: lookup onepassword
         docker_ports:
           8086: 8086
         docker_vols:
+          "/etc/passwd": "/etc/passwd"
+          "/etc/group": "/etc/group"
           "/mnt/influxdb": "/var/lib/influxdb"
         docker_options: |
+          --user=influxdb \
           --net=host \
 
       - name: minecraft-survival
@@ -35,13 +38,13 @@
             mount_options: discard
         docker_env:
           TZ: America/New_York
-          UID: 518 # FIXME: lookup UID
-          GID: 526 # FIXME: lookup GID
           # VERSION: SNAPSHOT
           MEMORY: 2G
         docker_ports:
           25565: 25565
         docker_vols:
+          "/etc/passwd": "/etc/passwd"
+          "/etc/group": "/etc/group"
           "/mnt/minecraft/survival": "/data"
         docker_options: |
           --network=lan5 \
@@ -57,18 +60,23 @@
           - name: tv_shows
             size: 1.5T
             vg: 12tb_2020
+            mode: "02775"
           - name: movies
             size: 400G
             vg: 12tb_2020
+            mode: "02775"
           - name: personal_movies
             size: 400G
             vg: 12tb_2020
+            mode: "02775"
           - name: music
             size: 100G
             vg: 12tb_2020
+            mode: "02775"
           - name: photos
             size: 400G
             vg: 12tb_2020
+            mode: "02775"
         docker_env:
           TZ: "America/New_York"
           PLEX_CLAIM: "claim-bRrsrbVS6hxu6eriWK1b"
@@ -113,6 +121,7 @@
           - name: uvc
             size: 750G
             vg: 12tb_2020
+            mode: "0775"
         docker_env:
           TZ: 'America/New_York'
           PUID: 1002 # FIXME: Lookup UID
