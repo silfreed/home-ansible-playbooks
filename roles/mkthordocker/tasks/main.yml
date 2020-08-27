@@ -80,7 +80,7 @@
   template:
     src: mnt-.service.j2
     dest: "/etc/systemd/system/mnt-{{ item.1.name }}.mount"
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   loop: "{{ mkthordocker | subelements('lvm') }}"
@@ -90,7 +90,7 @@
   template:
     src: docker@.service.j2
     dest: "/etc/systemd/system/docker@{{ item.name }}.service"
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
   loop: "{{ mkthordocker }}"
