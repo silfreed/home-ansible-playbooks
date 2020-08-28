@@ -17,12 +17,16 @@ ExecStart=/usr/bin/docker run --rm --name %i \
   -p {{ k }}:{{ v }} \
 {% endfor %}
 {% endif %}
-{%- for k,v in item.docker_env.items() if 'docker_env' in item %}
+{%- if 'docker_env' in item %}
+{%- for k,v in item.docker_env.items() %}
   -e {{ k }}={{ v }} \
 {% endfor %}
-{%- for k,v in item.docker_vols.items() if 'docker_vols' in item %}
+{% endif %}
+{%- if 'docker_vols' in item %}
+{%- for k,v in item.docker_vols.items() %}
   -v {{ k }}:{{ v }} \
 {% endfor %}
+{% endif %}
   {{ item.docker_hub_image }}
 
 [Install]
