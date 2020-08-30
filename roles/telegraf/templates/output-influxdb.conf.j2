@@ -3,6 +3,6 @@
   database = "telegraf"
   ## HTTP Basic Auth
   username = "telegraf"
-  password = "secretpassword"
+  password = "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section="THOR", field='influxdb telegraf pass') }}"
 
 
