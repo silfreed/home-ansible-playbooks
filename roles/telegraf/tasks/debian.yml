@@ -1,0 +1,20 @@
+---
+- name: install apt repository key
+  become: true
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+    state: present
+
+- name: install apt repository
+  become: true
+  apt_repository:
+    repo: 'deb https://repos.influxdata.com/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} stable'
+    state: present
+
+- name: install telegraf packages
+  become: true
+  apt:
+    state: latest
+    pkg:
+      - vim
+

@@ -1,0 +1,18 @@
+---
+- name: start telegraf service
+  become: true
+  systemd:
+    name: telegraf
+    state: started
+    enabled: yes
+
+- name: install all telegraf configs
+  become: true
+  template:
+    src: "{{ item }}"
+    dest: "/etc/telegraf/telegraf.d/{{ item | basename | regex_replace('\\.j2$', '') }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ lookup('fileglob', '../templates/*.j2', wantlist=True) }}"
+

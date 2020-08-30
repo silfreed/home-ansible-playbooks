@@ -1,0 +1,18 @@
+---
+- name: add influx yum repo
+  become: true
+  yum_repository:
+    name: influxdb
+    description: InfluxDB Repository
+    #baseurl: https://repos.influxdata.com/rhel/$releasever/$basearch/stable/
+    baseurl: https://repos.influxdata.com/rhel/8/$basearch/stable/
+    gpgkey: https://repos.influxdata.com/influxdb.key
+    gpgcheck: yes
+
+- name: install telegraf via dnf
+  become: true
+  dnf:
+    state: latest
+    name:
+      - telegraf
+
