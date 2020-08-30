@@ -14,7 +14,7 @@
   user:
     name: "{{item.1.user}}"
     system: yes
-  loop: "{{ mkthordocker | subelements('lvm') }}"
+  loop: "{{ mkthordocker | subelements('lvm', skip_missing=true) }}"
   when: item.1.user is defined
 
 # FIXME: how do we ensure the user, group, and mode _AFTER_ the volume is mounted?
@@ -25,7 +25,7 @@
     state: directory
     mode: "{{ item.1.mode|default('0750') }}"
     owner: "{{ item.1.user|default(omit) }}"
-  loop: "{{ mkthordocker | subelements('lvm') }}"
+  loop: "{{ mkthordocker | subelements('lvm', skip_missing=true) }}"
 
 - name: collect lvs info
   tags: lvs
@@ -53,24 +53,23 @@
 #   tags: lvs
 #   debug:
 #     var: lvs.report[0].lv|map(attribute='lv_name')|list
-    
+
 - name: make lvm volume
   tags: mklvm
   become: true
   command: lvcreate -L {{ item.1.size }} {{ item.1.vg }} -n {{ item.1.name }}
   # debug:
   #   msg: "lvcreate -L {{ item.1.size }} {{ item.1.vg }} -n {{ item.1.name }}"
-  loop: "{{ mkthordocker | subelements('lvm') }}"
+  loop: "{{ mkthordocker | subelements('lvm', skip_missing=true) }}"
   when: item.1.name not in lvs.report[0].lv|map(attribute='lv_name')|list
 
-# FIXME: format the LVM volume
 - name: format lvm volume
   tags: mklvm
   become: true
   command: mke2fs /dev/{{ item.1.vg }}/{{ item.1.name }}
   # debug:
   #   msg: "mke2fs /dev/{{ item.1.vg }}/{{ item.1.name }}"
-  loop: "{{ mkthordocker | subelements('lvm') }}"
+  loop: "{{ mkthordocker | subelements('lvm', skip_missing=true) }}"
   when: item.1.name not in lvs.report[0].lv|map(attribute='lv_name')|list
 
 # FIXME: detect if LVM volume size is different from configured
@@ -83,7 +82,7 @@
     mode: "0644"
     owner: root
     group: root
-  loop: "{{ mkthordocker | subelements('lvm') }}"
+  loop: "{{ mkthordocker | subelements('lvm', skip_missing=true) }}"
 
 - name: create docker systemd unit file
   become: yes
@@ -106,12 +105,13 @@
     state: started
     enabled: yes
     name: "mnt-{{ item.1.name }}.mount"
-  loop: "{{ mkthordocker | subelements('lvm') }}"
+  loop: "{{ mkthordocker | subelements('lvm', skip_missing=true) }}"
 
-- name: start docker systemd unit 
+- name: start docker systemd unit
   become: yes
   systemd:
     state: started
     enabled: yes
     name: "docker@{{ item.name }}.service"
   loop: "{{ mkthordocker }}"
+

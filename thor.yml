@@ -122,6 +122,8 @@
           - name: unifi
             size: 50G
             vg: 12tb_2020
+            mode: "0775"
+            user: "unifi"
         docker_env:
           TZ: 'America/New_York'
           RUNAS_UID0: false
@@ -143,6 +145,7 @@
             size: 750G
             vg: 12tb_2020
             mode: "0775"
+            user: "unifi-video"
         docker_env:
           TZ: 'America/New_York'
           PUID: 1002 # FIXME: Lookup UID
@@ -166,6 +169,28 @@
           --cap-add SYS_ADMIN \
           --cap-add DAC_READ_SEARCH \
 
-  
+      - name: unifi-poller
+        docker_hub_image: golift/unifi-poller:latest
+        description: "Unifi Poller Container"
+        docker_env:
+          UP_UNIFI_DEFAULT_URL: "https://192.168.0.15:8443"
+          UP_UNIFI_DEFAULT_USER: "unifipoller"
+          UP_UNIFI_DEFAULT_PASS: "unifipoller" #FIXME: set password via onepassword
+          UP_INFLUXDB_URL: "http://192.168.0.15:8086"
+          UP_INFLUXDB_USER: "telegraf"
+          UP_INFLUXDB_PASS: "secretpassword" #FIXME: set password via onepassword
+
+# FIXME: this needs updated to work with my CM700
+#      - name: netgear-scrapers
+#        docker_hub_image: iandees/netgear-scrapers
+#        description: "NetGear Cable Modem Scraper Container"
+#        docker_env:
+#          INFLUX_URL: "http://192.168.0.15:8086"
+#          INFLUX_USER: "telegraf"
+#          INFLUX_PASS: "secretpassword" #FIXME: set password via onepassword
+#          INFLUX_DB: "cablemodem"
+#          MODEM_PASSWORD: "password" #FIXME: set password via onepassword
+
+
   roles:
     - mkthordocker

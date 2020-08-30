@@ -1,7 +1,7 @@
 [Unit]
 Description={{ item.description }}
 After=docker.service
-Requires=docker.service{% for lvm in item.lvm if item.lvm is defined %} mnt-{{ lvm.name }}.mount{% endfor %}{{''}}
+Requires=docker.service{% if item.lvm is defined %}{% for lvm in item.lvm %} mnt-{{ lvm.name }}.mount{% endfor %}{% endif %}{{''}}
 
 # https://blog.container-solutions.com/running-docker-containers-with-systemd
 [Service]
