@@ -1,11 +1,4 @@
 ---
-- name: start telegraf service
-  become: true
-  systemd:
-    name: telegraf
-    state: started
-    enabled: yes
-
 - name: install all telegraf configs
   become: true
   template:
@@ -15,4 +8,11 @@
     group: root
     mode: '0644'
   loop: "{{ lookup('fileglob', '../templates/*.j2', wantlist=True) }}"
+
+- name: start telegraf service
+  become: true
+  systemd:
+    name: telegraf
+    state: started
+    enabled: yes
 
