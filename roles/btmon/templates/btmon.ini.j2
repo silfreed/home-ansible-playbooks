@@ -12,3 +12,17 @@ mysql_insert_period = 10
 oem_out=true
 oem_token={{ oem_token }}
 oem_url=https://emoncms.org/input/post
+
+
+[influxdb]
+influxdb_out = true
+influxdb_host = 192.168.0.15
+influxdb_username = telegraf
+influxdb_password = secretpass
+influxdb_database = btmon
+influxdb_measurement = energy
+#influxdb_mode = row                 # "row": 1 series w/ many values; "col": many series w/ 1 value each
+#influxdb_map = 1234567_ch1_aws,a,1234567_ch2_aws,b  # renames channels
+#influxdb_tags = key1,value1,key2,value2             # adds tags
+#influxdb_db_schema = counters,ecmread,ecmreadext       # selects schema, default counters
+

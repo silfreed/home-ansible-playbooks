@@ -1,4 +1,6 @@
 ---
+# FIXME install python-influxdb
+
 # setup btmon config directory
 - name: setup btmon user for config
   user:
@@ -8,6 +10,9 @@
   getent:
     database: passwd
     key: "btmon"
+
+# FIXME deploy script
+# https://github.com/matthewwall/mtools/blob/master/bin/btmon.py
 
 - name: create btmon config
   become: yes
