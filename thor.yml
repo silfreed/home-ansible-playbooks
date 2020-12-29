@@ -113,6 +113,28 @@
           --ip=192.168.0.193 \
           -h HKRoad \
 
+      - name: arkserver
+        docker_hub_image: thmhoag/arkserver:latest
+        description: "Ark:Survival Server"
+        lvm:
+          - name: steam
+            size: 10G
+            vg: 12tb_2020
+          - name: arksurvival
+            size: 50G
+            vg: 500gb_2020_ssd
+            mount_options: discard
+        docker_env:
+          am_ark_SessionName: "Warner Ark TheIsland"
+          am_ark_MaxPlayers: 4
+        docker_ports:
+          27015: 27015
+          7778: 7778
+          7777: 7777
+        docker_vols:
+          "/mnt/steam": "/steam"
+          "/mnt/arksurvival": "/ark"
+
       - name: unifi-poller
         docker_hub_image: golift/unifi-poller:latest
         description: "Unifi Poller Container"
