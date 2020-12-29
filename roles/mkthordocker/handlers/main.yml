@@ -1,0 +1,15 @@
+---
+- name: systemctl daemon reload
+  become: true
+  systemd:
+    daemon_reload: yes
+
+- name: reload docker instance
+  become: true
+  systemd:
+    state: restarted
+    name: "docker@{{ item.name }}.service"
+  loop: "{{ mkthordocker }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: item.changed

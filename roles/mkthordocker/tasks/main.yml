@@ -15,6 +15,8 @@
     name: "{{item.1.user}}"
     system: yes
   loop: "{{ mkthordocker | subelements('lvm', skip_missing=true) }}"
+  loop_control:
+    label: "{{ item.0.name }} {{ item.1.name }}"
   when: item.1.user is defined
 
 # FIXME: how do we ensure the user, group, and mode _AFTER_ the volume is mounted?
@@ -26,6 +28,8 @@
     mode: "{{ item.1.mode|default('0750') }}"
     owner: "{{ item.1.user|default(omit) }}"
   loop: "{{ mkthordocker | subelements('lvm', skip_missing=true) }}"
+  loop_control:
+    label: "{{ item.0.name }} {{ item.1.name }}"
 
 - name: collect lvs info
   tags: lvs
@@ -61,6 +65,8 @@
   # debug:
   #   msg: "lvcreate -L {{ item.1.size }} {{ item.1.vg }} -n {{ item.1.name }}"
   loop: "{{ mkthordocker | subelements('lvm', skip_missing=true) }}"
+  loop_control:
+    label: "{{ item.0.name }} {{ item.1.name }}"
   when: item.1.name not in lvs.report[0].lv|map(attribute='lv_name')|list
 
 - name: format lvm volume
@@ -70,9 +76,11 @@
   # debug:
   #   msg: "mke2fs /dev/{{ item.1.vg }}/{{ item.1.name }}"
   loop: "{{ mkthordocker | subelements('lvm', skip_missing=true) }}"
+  loop_control:
+    label: "{{ item.0.name }} {{ item.1.name }}"
   when: item.1.name not in lvs.report[0].lv|map(attribute='lv_name')|list
 
-# FIXME: detect if LVM volume size is different from configured
+# TODO: detect if LVM volume size is different from configured
 
 - name: create LVM mountpoint systemd unit file
   become: yes
@@ -83,6 +91,9 @@
     owner: root
     group: root
   loop: "{{ mkthordocker | subelements('lvm', skip_missing=true) }}"
+  loop_control:
+    label: "{{ item.0.name }} {{ item.1.name }}"
+  # TODO: notify a handler to reload the docker instance
 
 - name: create docker systemd unit file
   become: yes
@@ -93,6 +104,8 @@
     owner: root
     group: root
   loop: "{{ mkthordocker }}"
+  loop_control:
+    label: "{{ item.name }}"
 
 # FIXME: only force reload when unit files change
 - name: force systemd daemon reload when unit files change
@@ -106,6 +119,8 @@
     enabled: yes
     name: "mnt-{{ item.1.name }}.mount"
   loop: "{{ mkthordocker | subelements('lvm', skip_missing=true) }}"
+  loop_control:
+    label: "{{ item.0.name }} {{ item.1.name }}"
 
 - name: start docker systemd unit
   become: yes
@@ -114,4 +129,6 @@
     enabled: yes
     name: "docker@{{ item.name }}.service"
   loop: "{{ mkthordocker }}"
-
+  loop_control:
+    label: "{{ item.name }}"
+  notify: "reload docker instance"
