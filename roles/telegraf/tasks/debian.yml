@@ -16,5 +16,5 @@
   apt:
     state: latest
     pkg:
-      - vim
+      - telegraf
 
