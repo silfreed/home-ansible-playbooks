@@ -118,7 +118,7 @@
         description: "Ark:Survival Server"
         lvm:
           - name: steam
-            size: 10G
+            size: 200G
             vg: 12tb_2020
           - name: arksurvival
             size: 50G
