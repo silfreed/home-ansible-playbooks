@@ -1,8 +1,11 @@
 ---
 - hosts: homeassistant
   remote_user: pi
-  become: true
+  connection: paramiko # because we need to specify a password on the first run
   vars:
+    ansible_ssh_pass: raspberry # hopefully just for the first run
+    hostname: rpi-homeassistant
+    domain: home.silfreed.net
     restic_create_cron: true
     restic_repos:
       remote:
@@ -15,6 +18,7 @@
     restic_backups:
       - name: homeassistant
         src: /home/homeassistant/
+        auto_restore: true
         repo: remote
         keep_last: 4
         prune: true
@@ -27,6 +31,7 @@
   roles:
     - rpi-common
     - docker
-    - ansible.restic
+    - role: ansible.restic
+      tags: 'restic'
     - homeassistant
     - telegraf

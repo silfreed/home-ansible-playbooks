@@ -1,7 +1,9 @@
 ---
 - hosts: btmon
   remote_user: pi
-  become: true
+  vars:
+    hostname: rpi-btmon
+    domain: home.silfreed.net
   roles:
     - rpi-common
     - btmon

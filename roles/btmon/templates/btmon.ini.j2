@@ -17,8 +17,8 @@ oem_url=https://emoncms.org/input/post
 [influxdb]
 influxdb_out = true
 influxdb_host = 192.168.0.15
-influxdb_username = telegraf
-influxdb_password = secretpass
+influxdb_username = btmon
+influxdb_password = {{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb btmon pass') }}
 influxdb_database = btmon
 influxdb_measurement = energy
 #influxdb_mode = row                 # "row": 1 series w/ many values; "col": many series w/ 1 value each

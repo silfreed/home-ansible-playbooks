@@ -1,0 +1,21 @@
+---
+- hosts: rtlsdr
+  remote_user: pi
+  connection: paramiko # because we need to specify a password on the first run
+  vars:
+    ansible_ssh_pass: raspberry # hopefully just for the first run
+    hostname: rpi-rtlsdr
+    domain: home.silfreed.net
+  roles:
+    - rpi-common
+    - telegraf
+
+  tasks:
+    - name: rtlsdr packages
+      tags: rtlsdr
+      apt:
+        state: latest
+        pkg:
+          - git
+          - rtl-sdr
+          - golang

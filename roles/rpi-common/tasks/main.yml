@@ -1,16 +1,17 @@
 ---
 - name: Upgrade all packages to the latest version
+  become: true
   apt:
     name: "*"
     state: latest
 
 - name: install base packages
+  become: true
   apt:
     state: latest
     pkg:
       - vim
 
-# set time zone
 - name: update tzdata
   become: true
   file:
@@ -20,19 +21,19 @@
     group: root
     state: link
 
-# set the hostname
-- name: Set the hostname
+- name: Set /etc/hostname
+  tags: ["rpi-common", "hostname"]
   become: yes
-  file:
-      path: /etc/hostname
-      mode: 644
-      group: root
-      owner: root
-      content: |
-        {{ hostname }}
+  copy:
+    dest: /etc/hostname
+    mode: 644
+    group: root
+    owner: root
+    content: |
+      {{ hostname }}.{{ domain }}
 
-# Set the hostname in /etc/hosts too
-- name: Set the other hostname
+- name: Set /etc/hosts hostname
+  tags: ["rpi-common", "hostname"]
   become: yes
   replace:
     path: /etc/hosts
@@ -43,6 +44,7 @@
 
 # enable sshd
 - name: ensure sshd is enabled
+  become: true
   systemd:
     name: ssh
     state: started
@@ -65,7 +67,7 @@
 # https://stackoverflow.com/questions/33972756/ansible-to-generate-random-passwords-automatically-for-users
 - name: set a non-default password for the "pi" account
   tags: password
-  become: yes
+  become: true
   user:
     name: "{{ item.user }}"
     password: "{{ item.password }}"
