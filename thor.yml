@@ -35,10 +35,9 @@
         docker_env:
           PUID: 454
           GUID: 451
+          INFLUXDB_HTTP_AUTH_ENABLED: true
           INFLUXDB_ADMIN_USER: admin
-          INFLUXDB_ADMIN_PASSWORD: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section="THOR", field='influxdb admin pass') }}"
-          INFLUXDB_USER: telegraf
-          INFLUXDB_USER_PASSWORD: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section="THOR", field='influxdb telegraf pass') }}"
+          INFLUXDB_ADMIN_PASSWORD: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb admin pass') }}"
         docker_ports:
           8086: 8086
         docker_vols:
@@ -114,70 +113,16 @@
           --ip=192.168.0.193 \
           -h HKRoad \
 
-      - name: unifi
-        docker_hub_image: jacobalberty/unifi:latest
-        description: "Unifi Controller Container"
-        lvm:
-          - name: unifi
-            size: 50G
-            vg: 12tb_2020
-            mode: "0775"
-            user: "unifi"
-        docker_env:
-          TZ: 'America/New_York'
-          RUNAS_UID0: false
-          UNIFI_UID: 1001 # FIXME: Lookup UID
-          UNIFI_GID: 1001 # FIXME: Lookup GID
-        docker_ports:
-          8080: 8080
-          8443: 8443
-          3478: 3478/udp
-          10001: 10001/udp
-        docker_vols:
-          "/mnt/unifi": "/unifi"
-
-      - name: uvc
-        docker_hub_image: pducharme/unifi-video-controller:latest
-        description: "Unifi Video Controller Container"
-        lvm:
-          - name: uvc
-            size: 750G
-            vg: 12tb_2020
-            mode: "0775"
-            user: "unifi-video"
-        docker_env:
-          TZ: 'America/New_York'
-          PUID: 1002 # FIXME: Lookup UID
-          PGID: 1002 # FIXME: Lookup GID
-        docker_ports:
-          7442: 7442
-          7443: 7443
-          7444: 7444
-          7445: 7445
-          7446: 7446
-          7447: 7447
-          7080: 7080
-          6666: 6666
-          1935: 1935
-        docker_vols:
-          "/mnt/uvc": "/var/lib/unifi-video"
-          "/mnt/uvc/videos": "/usr/lib/unifi-video/data/videos"
-        docker_options: |
-          --net=lan5 \
-          --ip=192.168.0.192 \
-          --cap-add SYS_ADMIN \
-          --cap-add DAC_READ_SEARCH \
-
       - name: unifi-poller
         docker_hub_image: golift/unifi-poller:latest
         description: "Unifi Poller Container"
         docker_env:
-          UP_UNIFI_DEFAULT_URL: "https://192.168.0.15:8443"
+          UP_UNIFI_DEFAULT_URL: "https://192.168.1.1"
           UP_UNIFI_DEFAULT_USER: "unifipoller"
-          UP_UNIFI_DEFAULT_PASS: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section="THOR", field='unifi read pass') }}"
+          UP_UNIFI_DEFAULT_PASS: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='unifi read pass') }}"
           UP_INFLUXDB_URL: "http://192.168.0.15:8086"
-          UP_INFLUXDB_USER: "telegraf"
-          UP_INFLUXDB_PASS: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section="THOR", field='influxdb telegraf pass') }}"
+          UP_INFLUXDB_USER: "unifi"
+          UP_INFLUXDB_PASS: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb unifi pass') }}"
 
 # TODO: this needs updated to work with my CM700
 #      - name: netgear-scrapers
@@ -186,10 +131,17 @@
 #        docker_env:
 #          INFLUX_URL: "http://192.168.0.15:8086"
 #          INFLUX_USER: "telegraf"
-#          INFLUX_PASS: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section="THOR", field='influxdb telegraf pass') }}"
+#          INFLUX_PASS: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb telegraf pass') }}"
 #          INFLUX_DB: "cablemodem"
 #          MODEM_PASSWORD: "{{ lookup('onepassword', 'Netgear CM600 Cable Modem', field='password') }}"
 
+#      - name: awair-to-influxdb
+#        docker_hub_image: astundzia/awair-to-influxdb
+#        description: "ships awair stats to influxdb"
+#          INFLUX_URL: "http://192.168.0.15:8086"
+#          INFLUX_USER: "awair"
+#          INFLUX_PASS: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb awair pass') }}"
+#          INFLUX_DB: "cablemodem"
 
   roles:
     - mkthordocker
