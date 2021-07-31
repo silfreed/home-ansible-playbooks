@@ -1,5 +1,6 @@
 ---
 - import_playbook: btmon.yml
+- import_playbook: flowers.yml
 - import_playbook: homeassistant.yml
 - import_playbook: rtlsdr.yml
 - import_playbook: thor.yml
