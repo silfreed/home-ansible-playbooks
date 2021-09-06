@@ -1,4 +1,5 @@
 ---
+- import_playbook: aprs.yml
 - import_playbook: btmon.yml
 - import_playbook: flowers.yml
 - import_playbook: homeassistant.yml
