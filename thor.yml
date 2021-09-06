@@ -3,9 +3,20 @@
   remote_user: silfreed
   vars:
     mkthordocker:
+      - name: newrelic-cpm
+        docker_hub_image: quay.io/newrelic/synthetics-minion:latest
+        description: "New Relic Synthetics Private Minion"
+        docker_env:
+          MINION_PRIVATE_LOCATION_KEY: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='newrelic cpm key') }}"
+        docker_options: |
+          -v /tmp:/tmp:rw \
+          -v /var/run/docker.sock:/var/run/docker.sock:rw \
+
       - name: grafana
         docker_hub_image: grafana/grafana:latest
         description: "Grafana Container"
+        state: stopped
+        enabled: no
         lvm:
           - name: grafana_data
             size: 50G
@@ -25,7 +36,7 @@
           --user=455:452 \
 
       - name: influxdb
-        docker_hub_image: influxdb
+        docker_hub_image: influxdb:1.8
         description: "InfluxDB Container"
         lvm:
           - name: influxdb
@@ -53,7 +64,7 @@
         lvm:
           - name: minecraft
             size: 50G
-            vg: 500gb_2020_ssd
+            vg: 500gb_2021_ssd
             mount_options: discard
         docker_env:
           TZ: America/New_York
@@ -114,6 +125,8 @@
           -h HKRoad \
 
       - name: arkserver
+        state: stopped
+        enabled: no
         docker_hub_image: thmhoag/arkserver:latest
         description: "Ark:Survival Server"
         # TODO: set owner for directories to "steam" user
@@ -123,20 +136,25 @@
             vg: 12tb_2020
           - name: arksurvival
             size: 50G
-            vg: 500gb_2020_ssd
+            vg: 500gb_2021_ssd
             mount_options: discard
         docker_env:
           am_ark_SessionName: '"Warner Ark TheIsland"'
           am_ark_MaxPlayers: 4
-        docker_ports:
-          27015: 27015
-          7778: 7778
-          7777: 7777
+          am_ark_bRawSockets: "False"
         docker_vols:
           "/mnt/steam": "/home/steam/Steam"
           "/mnt/arksurvival": "/ark"
-          "/mnt/steam/server": "/ark/server"
-          "/mnt/steam/staging": "/ark/staging"
+        docker_options: |
+          --network=lan5 \
+          --ip=192.168.0.195 \
+          -p 7777:7777/udp \
+          -p 7778:7778/udp \
+          -p 27015:27015/udp \
+          -p 7777:7777 \
+          -p 7778:7778 \
+          -p 27015:27015 \
+          -p 32330:32330 \
 
       - name: unifi-poller
         docker_hub_image: golift/unifi-poller:latest
