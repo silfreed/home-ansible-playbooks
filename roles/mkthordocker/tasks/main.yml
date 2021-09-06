@@ -122,13 +122,14 @@
   loop_control:
     label: "{{ item.0.name }} {{ item.1.name }}"
 
-- name: start docker systemd unit
+- name: manage docker systemd unit
   become: yes
   systemd:
-    state: started
-    enabled: yes
+    state: "{{ item.state | default('started') }}"
+    enabled: "{{ item.enabled | default('yes') }}"
     name: "docker@{{ item.name }}.service"
   loop: "{{ mkthordocker }}"
   loop_control:
     label: "{{ item.name }}"
   notify: "reload docker instance"
+
