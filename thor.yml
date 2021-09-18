@@ -36,7 +36,7 @@
           --user=455:452 \
 
       - name: influxdb
-        docker_hub_image: influxdb:1.8
+        docker_hub_image: influxdb:latest
         description: "InfluxDB Container"
         lvm:
           - name: influxdb
