@@ -41,10 +41,10 @@
             size: 200G
             vg: 12tb_2020
             user: loki
-        docker_env:
-        #   GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
-          GF_UID: 455
-          GF_GID: 452
+        #docker_env:
+        #  GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+        #  GF_UID: 451
+        #  GF_GID: 447
         docker_ports:
           3100: 3100
         docker_vols:
@@ -52,7 +52,7 @@
           "/etc/group": "/etc/group"
           "/mnt/loki": "/loki"
         docker_options: |
-          --user=455:452 \
+          --user=451:447 \
 
       - name: influxdb
         docker_hub_image: influxdb:latest
