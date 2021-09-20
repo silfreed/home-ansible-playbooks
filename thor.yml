@@ -17,7 +17,7 @@
         description: "Grafana Container"
         lvm:
           - name: grafana_data
-            size: 200G
+            size: 50G
             vg: 12tb_2020
             user: grafana
         docker_env:
@@ -59,7 +59,7 @@
         description: "InfluxDB Container"
         lvm:
           - name: influxdb
-            size: 50G
+            size: 200G
             vg: 12tb_2020
             user: influxdb
         docker_env:
@@ -73,9 +73,11 @@
         docker_vols:
           "/etc/passwd": "/etc/passwd"
           "/etc/group": "/etc/group"
-          "/mnt/influxdb": "/var/lib/influxdb"
+          "/mnt/influxdb/influxdb2": "/var/lib/influxdb2"
+          "/mnt/influxdb/influxdb2-config": "/etc/influxdb2"
         docker_options: |
           --user=454:451 \
+          --ulimit nofile=50000:50000 \
 
       - name: minecraft-survival
         docker_hub_image: itzg/minecraft-server
