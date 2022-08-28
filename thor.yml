@@ -13,7 +13,7 @@
           -v /var/run/docker.sock:/var/run/docker.sock:rw \
 
       - name: grafana
-        docker_hub_image: grafana/grafana:latest
+        docker_hub_image: grafana/grafana-oss:latest
         description: "Grafana Container"
         lvm:
           - name: grafana_data
@@ -24,12 +24,21 @@
         #   GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
           GF_UID: 455
           GF_GID: 452
+          GF_SERVER_DOMAIN: 192.168.0.15
+          GF_SMTP_ENABLED: true
+          GF_SMTP_FROM_ADDRESS: grafana@home.silfreed.net
+          GF_SMTP_HOST: smtp.fastmail.com:995
+          GF_SMTP_SKIP_VERIFY: true
+          GF_SMTP_USER: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='grafana smtp user') }}"
+          GF_SMTP_PASSWORD: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='grafana smtp pass') }}"
         docker_ports:
           3000: 3000
         docker_vols:
           "/etc/passwd": "/etc/passwd"
           "/etc/group": "/etc/group"
-          "/mnt/grafana_data": "/var/lib/grafana"
+          "/mnt/grafana_data/var-lib-grafana": "/var/lib/grafana"
+          # "/mnt/grafana_data/etc-grafana": "/etc/grafana"
+          # "/mnt/grafana_data/usr-share-grafana": "/usr/share/grafana" 
         docker_options: |
           --user=455:452 \
 
@@ -130,7 +139,6 @@
             mode: "02775"
         docker_env:
           TZ: "America/New_York"
-          PLEX_CLAIM: "claim-bRrsrbVS6hxu6eriWK1b"
           PLEX_UID: 475 # FIXME: lookup UID
           PLEX_GID: 475 # FIXME: lookup GID
         docker_vols:
