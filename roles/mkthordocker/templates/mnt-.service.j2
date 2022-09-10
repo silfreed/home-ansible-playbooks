@@ -1,11 +1,11 @@
 [Unit]
-Description=Mount {{ item.1.vg }} {{ item.1.name }} 
+Description=Mount {{ item.vg }} {{ item.name }} 
 
 [Mount]
-What=/dev/mapper/{{ item.1.vg }}-{{ item.1.name }}
-Where=/mnt/{{ item.1.name }}
+What=/dev/mapper/{{ item.vg }}-{{ item.name }}
+Where=/mnt/{{ item.name }}
 Type=ext4
-Options=defaults{{ "," + item.1.mount_options if item.1.mount_options is defined}}
+Options=defaults{{ "," + item.mount_options if item.mount_options is defined}}
 
 [Install]
 WantedBy=multi-user.target

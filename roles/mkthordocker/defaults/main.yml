@@ -1,0 +1,47 @@
+---
+# # name: influxdb
+# name:
+
+# # docker_hub_image: influxdb:latest
+# docker_hub_image:
+
+# # description: "InfluxDB Container"
+# description:
+
+# # lvm:
+# #   - name: influxdb
+# #     size: 200G
+# #     vg: 12tb_2020
+# #     user: influxdb
+# lvm:
+#   - name: influxdb
+#     size: 200G
+#     vg: 12tb_2020
+#     user: influxdb
+#   - name: influxdb2
+#     size: 200G
+#     vg: 12tb_2020
+#     user: influxdb
+# # docker_env:
+# #   PUID: 454
+# #   GUID: 451
+# #   INFLUXDB_HTTP_AUTH_ENABLED: true
+# #   INFLUXDB_ADMIN_USER: admin
+# #   INFLUXDB_ADMIN_PASSWORD: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb admin pass') }}"
+# docker_env:
+
+# # docker_ports:
+# #   8086: 8086
+# docker_ports:
+
+# #docker_vols:
+#   # "/etc/passwd": "/etc/passwd"
+#   # "/etc/group": "/etc/group"
+#   # "/mnt/influxdb/influxdb2": "/var/lib/influxdb2"
+#   # "/mnt/influxdb/influxdb2-config": "/etc/influxdb2"
+# docker_vols:
+
+# # docker_options: |
+#   # --user=454:451 \
+#   # --ulimit nofile=50000:50000 \
+# docker_options:

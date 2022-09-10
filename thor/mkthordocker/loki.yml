@@ -1,0 +1,21 @@
+---
+- name: loki
+  docker_hub_image: grafana/loki:latest
+  description: "Loki Container"
+  lvm:
+    - name: loki
+      size: 200G
+      vg: 12tb_2020
+      user: loki
+  #docker_env:
+  #  GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+  #  GF_UID: 451
+  #  GF_GID: 447
+  docker_ports:
+    3100: 3100
+  docker_vols:
+    "/etc/passwd": "/etc/passwd"
+    "/etc/group": "/etc/group"
+    "/mnt/loki": "/loki"
+  docker_options: |
+    --user=451:447 \

@@ -1,0 +1,32 @@
+---
+- name: arkserver
+  state: stopped
+  enabled: no
+  docker_hub_image: thmhoag/arkserver:latest
+  description: "Ark:Survival Server"
+  # TODO: set owner for directories to "steam" user
+  lvm:
+    - name: steam
+      size: 200G
+      vg: 12tb_2020
+    - name: arksurvival
+      size: 50G
+      vg: 500gb_2021_ssd
+      mount_options: discard
+  docker_env:
+    am_ark_SessionName: '"Warner Ark TheIsland"'
+    am_ark_MaxPlayers: 4
+    am_ark_bRawSockets: "False"
+  docker_vols:
+    "/mnt/steam": "/home/steam/Steam"
+    "/mnt/arksurvival": "/ark"
+  docker_options: |
+    --network=lan5 \
+    --ip=192.168.0.195 \
+    -p 7777:7777/udp \
+    -p 7778:7778/udp \
+    -p 27015:27015/udp \
+    -p 7777:7777 \
+    -p 7778:7778 \
+    -p 27015:27015 \
+    -p 32330:32330 \

@@ -1,0 +1,45 @@
+---
+argument_specs:
+  # roles/myapp/tasks/main.yml entry point
+  main:
+    short_description: The main entry point.
+    options:
+      name:
+        type: "str"
+        required: true
+        description: "Name of the docker service"
+
+      docker_hub_image:
+        type: "str"
+        required: true
+        description: "Image name from docker hub; ex: influxdb:latest"
+
+      description:
+        type: "str"
+        required: true
+        description: "Description of the service"
+
+      lvm:
+        type: "list"
+        required: false
+        description: "List of LVM volumes, including name, size, vg, and user"
+
+      docker_env:
+        type: "obj"
+        required: false
+        description: "key/value pairs of items to set in docker environment"
+
+      docker_ports:
+        type: "obj"
+        required: false
+        description: "key/value pairs of ports to open for docker image"
+
+      docker_vols:
+        type: "obj"
+        required: false
+        description: "key/value pairs of source to dest volume mappings"
+
+      docker_options:
+        type: "str"
+        required: false
+        description: "any docker additional docker options you may want to pass in"

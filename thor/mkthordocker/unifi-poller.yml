@@ -1,0 +1,11 @@
+---
+- name: unifi-poller
+  docker_hub_image: golift/unifi-poller:latest
+  description: "Unifi Poller Container"
+  docker_env:
+    UP_UNIFI_DEFAULT_URL: "https://192.168.1.1"
+    UP_UNIFI_DEFAULT_USER: "unifipoller"
+    UP_UNIFI_DEFAULT_PASS: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='unifi read pass') }}"
+    UP_INFLUXDB_URL: "http://192.168.0.15:8086"
+    UP_INFLUXDB_USER: "unifi"
+    UP_INFLUXDB_PASS: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb unifi pass') }}"

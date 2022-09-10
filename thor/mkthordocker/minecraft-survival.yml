@@ -1,0 +1,22 @@
+---
+- name: minecraft-survival
+  docker_hub_image: itzg/minecraft-server
+  description: "Minecraft Survival Container"
+  lvm:
+    - name: minecraft
+      size: 50G
+      vg: 500gb_2021_ssd
+      mount_options: discard
+  docker_env:
+    TZ: America/New_York
+    # VERSION: SNAPSHOT
+    MEMORY: 2G
+  docker_ports:
+    25565: 25565
+  docker_vols:
+    "/etc/passwd": "/etc/passwd"
+    "/etc/group": "/etc/group"
+    "/mnt/minecraft/survival": "/data"
+  docker_options: |
+    --network=lan5 \
+    --ip=192.168.0.194 \

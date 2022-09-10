@@ -1,9 +1,9 @@
 ---
-- include: debian.yml
+- include_tasks: debian.yml
   when: ansible_os_family == 'Debian'
   tags: package
 
-- include: redhat.yml
+- include_tasks: redhat.yml
   when: ansible_os_family == 'RedHat'
   tags: package
 

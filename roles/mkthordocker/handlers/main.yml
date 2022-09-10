@@ -8,9 +8,6 @@
   become: true
   systemd:
     state: restarted
-    name: "docker@{{ item.name }}.service"
-  loop: "{{ mkthordocker }}"
-  loop_control:
-    label: "{{ item.name }}"
+    name: "docker@{{ name }}.service"
 #  when: item.changed
 

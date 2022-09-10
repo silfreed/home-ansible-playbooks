@@ -1,7 +1,7 @@
 ---
-- include: installation.yml
+- include_tasks: installation.yml
   tags: [telegraf, package]
 
-- include: configuration.yml
+- include_tasks: configuration.yml
   tags: [telegraf, config]
 
