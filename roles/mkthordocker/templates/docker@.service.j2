@@ -11,7 +11,7 @@ ExecStartPre=-/usr/bin/docker stop %i
 ExecStartPre=-/usr/bin/docker rm %i
 ExecStartPre=/usr/bin/docker pull {{ docker_hub_image }}
 ExecStart=/usr/bin/docker run --rm --name %i \
-  {{ docker_options|indent(width=2) if docker_options is defined }}
+  {{ docker_options|indent(width=2)+"\n" if docker_options is defined }}
 {%- if docker_ports is defined %}
 {%- for k,v in docker_ports.items() %}
   -p {{ k }}:{{ v }} \
