@@ -25,17 +25,17 @@ argument_specs:
         description: "List of LVM volumes, including name, size, vg, and user"
 
       docker_env:
-        type: "obj"
+        type: "dict"
         required: false
         description: "key/value pairs of items to set in docker environment"
 
       docker_ports:
-        type: "obj"
+        type: "dict"
         required: false
         description: "key/value pairs of ports to open for docker image"
 
       docker_vols:
-        type: "obj"
+        type: "dict"
         required: false
         description: "key/value pairs of source to dest volume mappings"
 
