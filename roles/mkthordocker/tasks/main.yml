@@ -14,7 +14,7 @@
 - name: create user for LVM mount
   become: true
   user:
-    name: "{{item.user}}"
+    name: "{{ item.user }}"
     system: yes
   loop: "{{ lvm }}"
   loop_control:
