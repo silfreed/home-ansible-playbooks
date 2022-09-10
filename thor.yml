@@ -2,8 +2,8 @@
 - hosts: thor
   remote_user: silfreed
 
-  # roles:
-  #   - telegraf
+  roles:
+    - telegraf
 
   tasks:
   - name: "ark survival server docker"

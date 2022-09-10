@@ -1,15 +1,15 @@
 ---
-- name: debug all the things
-  debug:
-    msg: "{{ item }}"
-  loop:
-    - "Name: {{ name }}"
-    - "DHI: {{ docker_hub_image }}"
-    - "Descr: {{ description }}"
-    - "LVM: {{ lvm|default(omit) }}"
-    - "DEnv: {{ docker_env|default(omit) }}"
-    - "DVol: {{ docker_vols|default(omit) }}"
-    - "DOpt: {{ docker_options|default(omit) }}"
+# - name: debug all the things
+#   debug:
+#     msg: "{{ item }}"
+#   loop:
+#     - "Name: {{ name }}"
+#     - "DHI: {{ docker_hub_image }}"
+#     - "Descr: {{ description }}"
+#     - "LVM: {{ lvm|default(omit) }}"
+#     - "DEnv: {{ docker_env|default(omit) }}"
+#     - "DVol: {{ docker_vols|default(omit) }}"
+#     - "DOpt: {{ docker_options|default(omit) }}"
 
 - name: create user for LVM mount
   become: true
