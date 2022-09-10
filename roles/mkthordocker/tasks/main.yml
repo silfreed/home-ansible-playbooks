@@ -6,24 +6,24 @@
     - "Name: {{ name }}"
     - "DHI: {{ docker_hub_image }}"
     - "Descr: {{ description }}"
-    - "LVM: {{ lvm }}"
-    - "DEnv: {{ docker_env }}"
-    - "DVol: {{ docker_vols }}"
-    - "DOpt: {{ docker_options }}"
+    - "LVM: {{ lvm|default(omit) }}"
+    - "DEnv: {{ docker_env|default(omit) }}"
+    - "DVol: {{ docker_vols|default(omit) }}"
+    - "DOpt: {{ docker_options|default(omit) }}"
 
 - name: create user for LVM mount
-  become: yes
+  become: true
   user:
     name: "{{item.user}}"
     system: yes
   loop: "{{ lvm }}"
   loop_control:
     label: "{{ item.name }}"
-  when: item.user is defined
+  when: lvm is defined and 'user' in item
 
 # FIXME: how do we ensure the user, group, and mode _AFTER_ the volume is mounted?
 - name: create LVM mount
-  become: yes
+  become: true
   file:
     path: "/mnt/{{ item.name }}"
     state: directory
@@ -32,6 +32,7 @@
   loop: "{{ lvm }}"
   loop_control:
     label: "{{ item.name }}"
+  when: lvm is defined
 
 - name: collect lvs info
   tags: lvs
@@ -40,6 +41,7 @@
   command: lvs --reportformat=json
   ignore_errors: true
   register: result
+  when: lvm is defined
 
 # - name: debug lvs result
 #   debug:
@@ -49,7 +51,7 @@
   tags: lvs
   set_fact:
     lvs: "{{ result.stdout | from_json }}"
-  when: result is defined
+  when: lvm is defined and result is defined
 
 # - name: debug lvs fact
 #   tags: lvs
@@ -69,7 +71,7 @@
   loop: "{{ lvm }}"
   loop_control:
     label: "{{ item.name }}"
-  when: item.name not in lvs.report[0].lv|map(attribute='lv_name')|list
+  when: lvm is defined and item.name not in lvs.report[0].lv|map(attribute='lv_name')|list
 
 - name: format lvm volume
   tags: mklvm
@@ -80,12 +82,12 @@
   loop: "{{ lvm }}"
   loop_control:
     label: "{{ item.name }}"
-  when: item.name not in lvs.report[0].lv|map(attribute='lv_name')|list
+  when: lvm is defined and item.name not in lvs.report[0].lv|map(attribute='lv_name')|list
 
 # TODO: detect if LVM volume size is different from configured
 
 - name: create LVM mountpoint systemd unit file
-  become: yes
+  become: true
   template:
     src: mnt-.service.j2
     dest: "/etc/systemd/system/mnt-{{ item.name }}.mount"
@@ -96,9 +98,10 @@
   loop_control:
     label: "{{ item.name }}"
   # TODO: notify a handler to reload the docker instance
+  when: lvm is defined
 
 - name: create docker systemd unit file
-  become: yes
+  become: true
   template:
     src: docker@.service.j2
     dest: "/etc/systemd/system/docker@{{ name }}.service"
@@ -112,7 +115,7 @@
     daemon_reload: yes
 
 - name: start LVM mountpoint systemd service
-  become: yes
+  become: true
   systemd:
     state: started
     enabled: yes
@@ -120,12 +123,12 @@
   loop: "{{ lvm }}"
   loop_control:
     label: "{{ item.name }}"
+  when: lvm is defined
 
 - name: manage docker systemd unit
-  become: yes
+  become: true
   systemd:
     state: "{{ state | default('started') }}"
     enabled: "{{ enabled | default('yes') }}"
     name: "docker@{{ name }}.service"
   notify: "reload docker instance"
-

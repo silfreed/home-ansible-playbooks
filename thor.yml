@@ -6,7 +6,42 @@
   #   - telegraf
 
   tasks:
-  - name: "Include each docker config"
+  - name: "ark survival server docker"
     ansible.builtin.include_role:
       name: mkthordocker
-      vars_from: thor/mkthordocker
+      vars_from: arkserver
+
+  - name: "grafana docker"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: grafana
+
+  - name: "influxdb docker"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: influxdb
+
+  - name: "loki docker"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: loki
+
+  - name: "minecraft survival docker"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: minecraft-survival
+
+  - name: "newrelic cpm docker"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: newrelic-cpm
+
+  - name: "plex media server docker"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: plexmediaserver
+
+  - name: "unifi-poller docker"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: unifi-poller
