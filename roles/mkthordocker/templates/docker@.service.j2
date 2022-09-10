@@ -1,7 +1,7 @@
 [Unit]
-Description={{ item.description }}
+Description={{ description }}
 After=docker.service
-Requires=docker.service{% if item.lvm is defined %}{% for lvm in item.lvm %} mnt-{{ lvm.name }}.mount{% endfor %}{% endif %}{{''}}
+Requires=docker.service{% if lvm is defined %}{% for lvm in lvm %} mnt-{{ lvm.name }}.mount{% endfor %}{% endif %}{{''}}
 
 # https://blog.container-solutions.com/running-docker-containers-with-systemd
 [Service]
@@ -9,25 +9,25 @@ TimeoutStartSec=0
 Restart=always
 ExecStartPre=-/usr/bin/docker stop %i
 ExecStartPre=-/usr/bin/docker rm %i
-ExecStartPre=/usr/bin/docker pull {{ item.docker_hub_image }}
+ExecStartPre=/usr/bin/docker pull {{ docker_hub_image }}
 ExecStart=/usr/bin/docker run --rm --name %i \
-  {{ item.docker_options|indent(width=2) if 'docker_options' in item }}
-{%- if 'docker_ports' in item %}
-{%- for k,v in item.docker_ports.items() %}
+  {{ docker_options|indent(width=2)+"\n" if docker_options is defined }}
+{%- if docker_ports is defined %}
+{%- for k,v in docker_ports.items() %}
   -p {{ k }}:{{ v }} \
 {% endfor %}
 {% endif %}
-{%- if 'docker_env' in item %}
-{%- for k,v in item.docker_env.items() %}
+{%- if docker_env is defined %}
+{%- for k,v in docker_env.items() %}
   -e {{ k }}={{ v }} \
 {% endfor %}
 {% endif %}
-{%- if 'docker_vols' in item %}
-{%- for k,v in item.docker_vols.items() %}
+{%- if docker_vols is defined %}
+{%- for k,v in docker_vols.items() %}
   -v {{ k }}:{{ v }} \
 {% endfor %}
 {% endif %}
-  {{ item.docker_hub_image }}
+  {{ docker_hub_image }}
 
 [Install]
 WantedBy=multi-user.target

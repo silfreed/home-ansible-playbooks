@@ -1,0 +1,30 @@
+---
+name: grafana
+docker_hub_image: grafana/grafana-oss:latest
+description: "Grafana Container"
+lvm:
+  - name: grafana_data
+    size: 50G
+    vg: 12tb_2020
+    user: grafana
+docker_env:
+#   GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+  GF_UID: 455
+  GF_GID: 452
+  GF_SERVER_DOMAIN: 192.168.0.15
+  GF_SMTP_ENABLED: true
+  GF_SMTP_FROM_ADDRESS: grafana@home.silfreed.net
+  GF_SMTP_HOST: smtp.fastmail.com:995
+  GF_SMTP_SKIP_VERIFY: true
+  GF_SMTP_USER: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='grafana smtp user') }}"
+  GF_SMTP_PASSWORD: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='grafana smtp pass') }}"
+docker_ports:
+  3000: 3000
+docker_vols:
+  "/etc/passwd": "/etc/passwd"
+  "/etc/group": "/etc/group"
+  "/mnt/grafana_data/var-lib-grafana": "/var/lib/grafana"
+  # "/mnt/grafana_data/etc-grafana": "/etc/grafana"
+  # "/mnt/grafana_data/usr-share-grafana": "/usr/share/grafana" 
+docker_options: |
+  --user=455:452 \

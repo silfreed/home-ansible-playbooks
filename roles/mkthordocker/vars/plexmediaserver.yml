@@ -1,0 +1,43 @@
+---
+name: plexmediaserver
+docker_hub_image: plexinc/pms-docker
+description: "Plex Media Server Container"
+lvm:
+  - name: plexmediaserver
+    size: 100G
+    vg: 12tb_2020
+  - name: tv_shows
+    size: 1.5T
+    vg: 12tb_2020
+    mode: "02775"
+  - name: movies
+    size: 400G
+    vg: 12tb_2020
+    mode: "02775"
+  - name: personal_movies
+    size: 400G
+    vg: 12tb_2020
+    mode: "02775"
+  - name: music
+    size: 100G
+    vg: 12tb_2020
+    mode: "02775"
+  - name: photos
+    size: 400G
+    vg: 12tb_2020
+    mode: "02775"
+docker_env:
+  TZ: "America/New_York"
+  PLEX_UID: 475 # FIXME: lookup UID
+  PLEX_GID: 475 # FIXME: lookup GID
+docker_vols:
+  "/mnt/plexmediaserver": "/config"
+  "/mnt/tv_shows": "/tv-seasons"
+  "/mnt/movies": "/movies"
+  "/mnt/personal_movies": "/home-movies"
+  "/mnt/music": "/music"
+  "/mnt/photos/public": "/photos"
+docker_options: |
+  --network=lan5 \
+  --ip=192.168.0.193 \
+  -h HKRoad \

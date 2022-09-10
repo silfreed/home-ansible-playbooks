@@ -1,213 +1,47 @@
 ---
 - hosts: thor
   remote_user: silfreed
-  vars:
-    mkthordocker:
-      - name: newrelic-cpm
-        docker_hub_image: quay.io/newrelic/synthetics-minion:latest
-        description: "New Relic Synthetics Private Minion"
-        docker_env:
-          MINION_PRIVATE_LOCATION_KEY: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='newrelic cpm key') }}"
-        docker_options: |
-          -v /tmp:/tmp:rw \
-          -v /var/run/docker.sock:/var/run/docker.sock:rw \
-
-      - name: grafana
-        docker_hub_image: grafana/grafana:latest
-        description: "Grafana Container"
-        lvm:
-          - name: grafana_data
-            size: 50G
-            vg: 12tb_2020
-            user: grafana
-        docker_env:
-        #   GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
-          GF_UID: 455
-          GF_GID: 452
-        docker_ports:
-          3000: 3000
-        docker_vols:
-          "/etc/passwd": "/etc/passwd"
-          "/etc/group": "/etc/group"
-          "/mnt/grafana_data": "/var/lib/grafana"
-        docker_options: |
-          --user=455:452 \
-
-      - name: loki
-        docker_hub_image: grafana/loki:latest
-        description: "Loki Container"
-        lvm:
-          - name: loki
-            size: 200G
-            vg: 12tb_2020
-            user: loki
-        #docker_env:
-        #  GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
-        #  GF_UID: 451
-        #  GF_GID: 447
-        docker_ports:
-          3100: 3100
-        docker_vols:
-          "/etc/passwd": "/etc/passwd"
-          "/etc/group": "/etc/group"
-          "/mnt/loki": "/loki"
-        docker_options: |
-          --user=451:447 \
-
-      - name: influxdb
-        docker_hub_image: influxdb:latest
-        description: "InfluxDB Container"
-        lvm:
-          - name: influxdb
-            size: 200G
-            vg: 12tb_2020
-            user: influxdb
-        docker_env:
-          PUID: 454
-          GUID: 451
-          INFLUXDB_HTTP_AUTH_ENABLED: true
-          INFLUXDB_ADMIN_USER: admin
-          INFLUXDB_ADMIN_PASSWORD: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb admin pass') }}"
-        docker_ports:
-          8086: 8086
-        docker_vols:
-          "/etc/passwd": "/etc/passwd"
-          "/etc/group": "/etc/group"
-          "/mnt/influxdb/influxdb2": "/var/lib/influxdb2"
-          "/mnt/influxdb/influxdb2-config": "/etc/influxdb2"
-        docker_options: |
-          --user=454:451 \
-          --ulimit nofile=50000:50000 \
-
-      - name: minecraft-survival
-        docker_hub_image: itzg/minecraft-server
-        description: "Minecraft Survival Container"
-        lvm:
-          - name: minecraft
-            size: 50G
-            vg: 500gb_2021_ssd
-            mount_options: discard
-        docker_env:
-          TZ: America/New_York
-          # VERSION: SNAPSHOT
-          MEMORY: 2G
-        docker_ports:
-          25565: 25565
-        docker_vols:
-          "/etc/passwd": "/etc/passwd"
-          "/etc/group": "/etc/group"
-          "/mnt/minecraft/survival": "/data"
-        docker_options: |
-          --network=lan5 \
-          --ip=192.168.0.194 \
-
-      - name: plexmediaserver
-        docker_hub_image: plexinc/pms-docker
-        description: "Plex Media Server Container"
-        lvm:
-          - name: plexmediaserver
-            size: 100G
-            vg: 12tb_2020
-          - name: tv_shows
-            size: 1.5T
-            vg: 12tb_2020
-            mode: "02775"
-          - name: movies
-            size: 400G
-            vg: 12tb_2020
-            mode: "02775"
-          - name: personal_movies
-            size: 400G
-            vg: 12tb_2020
-            mode: "02775"
-          - name: music
-            size: 100G
-            vg: 12tb_2020
-            mode: "02775"
-          - name: photos
-            size: 400G
-            vg: 12tb_2020
-            mode: "02775"
-        docker_env:
-          TZ: "America/New_York"
-          PLEX_CLAIM: "claim-bRrsrbVS6hxu6eriWK1b"
-          PLEX_UID: 475 # FIXME: lookup UID
-          PLEX_GID: 475 # FIXME: lookup GID
-        docker_vols:
-          "/mnt/plexmediaserver": "/config"
-          "/mnt/tv_shows": "/tv-seasons"
-          "/mnt/movies": "/movies"
-          "/mnt/personal_movies": "/home-movies"
-          "/mnt/music": "/music"
-          "/mnt/photos/public": "/photos"
-        docker_options: |
-          --network=lan5 \
-          --ip=192.168.0.193 \
-          -h HKRoad \
-
-      - name: arkserver
-        state: stopped
-        enabled: no
-        docker_hub_image: thmhoag/arkserver:latest
-        description: "Ark:Survival Server"
-        # TODO: set owner for directories to "steam" user
-        lvm:
-          - name: steam
-            size: 200G
-            vg: 12tb_2020
-          - name: arksurvival
-            size: 50G
-            vg: 500gb_2021_ssd
-            mount_options: discard
-        docker_env:
-          am_ark_SessionName: '"Warner Ark TheIsland"'
-          am_ark_MaxPlayers: 4
-          am_ark_bRawSockets: "False"
-        docker_vols:
-          "/mnt/steam": "/home/steam/Steam"
-          "/mnt/arksurvival": "/ark"
-        docker_options: |
-          --network=lan5 \
-          --ip=192.168.0.195 \
-          -p 7777:7777/udp \
-          -p 7778:7778/udp \
-          -p 27015:27015/udp \
-          -p 7777:7777 \
-          -p 7778:7778 \
-          -p 27015:27015 \
-          -p 32330:32330 \
-
-      - name: unifi-poller
-        docker_hub_image: golift/unifi-poller:latest
-        description: "Unifi Poller Container"
-        docker_env:
-          UP_UNIFI_DEFAULT_URL: "https://192.168.1.1"
-          UP_UNIFI_DEFAULT_USER: "unifipoller"
-          UP_UNIFI_DEFAULT_PASS: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='unifi read pass') }}"
-          UP_INFLUXDB_URL: "http://192.168.0.15:8086"
-          UP_INFLUXDB_USER: "unifi"
-          UP_INFLUXDB_PASS: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb unifi pass') }}"
-
-# TODO: this needs updated to work with my CM700
-#      - name: netgear-scrapers
-#        docker_hub_image: iandees/netgear-scrapers
-#        description: "NetGear Cable Modem Scraper Container"
-#        docker_env:
-#          INFLUX_URL: "http://192.168.0.15:8086"
-#          INFLUX_USER: "telegraf"
-#          INFLUX_PASS: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb telegraf pass') }}"
-#          INFLUX_DB: "cablemodem"
-#          MODEM_PASSWORD: "{{ lookup('onepassword', 'Netgear CM600 Cable Modem', field='password') }}"
-
-#      - name: awair-to-influxdb
-#        docker_hub_image: astundzia/awair-to-influxdb
-#        description: "ships awair stats to influxdb"
-#          INFLUX_URL: "http://192.168.0.15:8086"
-#          INFLUX_USER: "awair"
-#          INFLUX_PASS: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb awair pass') }}"
-#          INFLUX_DB: "cablemodem"
 
   roles:
-    - mkthordocker
     - telegraf
 
+  tasks:
+  - name: "ark survival server docker"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: arkserver
+
+  - name: "grafana docker"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: grafana
+
+  - name: "influxdb docker"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: influxdb
+
+  - name: "loki docker"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: loki
+
+  - name: "minecraft survival docker"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: minecraft-survival
+
+  - name: "newrelic cpm docker"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: newrelic-cpm
+
+  - name: "plex media server docker"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: plexmediaserver
+
+  - name: "unifi-poller docker"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: unifi-poller
