@@ -21,8 +21,14 @@ influxdb_username = btmon
 influxdb_password = {{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb btmon pass') }}
 influxdb_database = btmon
 influxdb_measurement = energy
-#influxdb_mode = row                 # "row": 1 series w/ many values; "col": many series w/ 1 value each
-#influxdb_map = 1234567_ch1_aws,a,1234567_ch2_aws,b  # renames channels
-#influxdb_tags = key1,value1,key2,value2             # adds tags
-#influxdb_db_schema = counters,ecmread,ecmreadext       # selects schema, default counters
+influxdb_mode = row
+influxdb_map = volts,volts,
+  500167_ch1_aws,mains,
+  500167_ch2_aws,hvac,
+  500167_aux1_ws,aux1,
+  500167_aux2_ws,aux2,
+  500167_aux3_ws,aux3,
+  500167_aux4_ws,aux4,
+  500167_aux5_ws,aux5
+influxdb_db_schema = counters
 
