@@ -45,3 +45,17 @@
     ansible.builtin.include_role:
       name: mkthordocker
       vars_from: unifi-poller
+
+  - name: "Promtail host journald config"
+    become: true
+    template:
+      src: promtail-journald_config.yml.j2
+      dest: "/etc/promtail/config.yml"
+      mode: "0644"
+      owner: root
+      group: root
+
+  - name: "Promtail log shipping"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: promtail-journald

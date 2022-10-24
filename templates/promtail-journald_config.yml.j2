@@ -1,0 +1,27 @@
+---
+server:
+  http_listen_port: 0
+  grpc_listen_port: 0
+
+positions:
+  filename: /var/tmp/promtail-positions.yaml
+
+client:
+  url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: journal
+    journal:
+      max_age: 12h
+      json: false
+      labels:
+        job: journal
+    relabel_configs:
+      - source_labels: [__journal__systemd_unit]
+        target_label: systemd_unit
+      - source_labels: [__journal__hostname]
+        target_label: nodename
+      - source_labels: [__journal_syslog_identifier]
+        target_label: syslog_identifier
+      - source_labels: [__journal__comm]
+        target_label: command
