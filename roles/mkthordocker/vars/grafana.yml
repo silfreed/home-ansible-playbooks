@@ -11,7 +11,7 @@ docker_env:
 #   GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
   GF_UID: 455
   GF_GID: 452
-  GF_SERVER_DOMAIN: 192.168.0.15
+  GF_SERVER_DOMAIN: 192.168.0.202
   GF_SMTP_ENABLED: true
   GF_SMTP_FROM_ADDRESS: grafana@home.silfreed.net
   GF_SMTP_HOST: smtp.fastmail.com:995
@@ -27,4 +27,6 @@ docker_vols:
   # "/mnt/grafana_data/etc-grafana": "/etc/grafana"
   # "/mnt/grafana_data/usr-share-grafana": "/usr/share/grafana" 
 docker_options: |
+  --network=lan5 \
+  --ip=192.168.0.199 \
   --user=455:452 \
