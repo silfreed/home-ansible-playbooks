@@ -1,0 +1,9 @@
+---
+name: promtail-syslog
+docker_hub_image: grafana/promtail:latest
+description: "Promtail syslog forwarder"
+docker_vols:
+  "/etc/promtail/syslog-config.yml": "/etc/promtail/config.yml"
+docker_options: |
+  --network=lan5 \
+  --ip=192.168.0.203 \
