@@ -2,6 +2,6 @@
 - import_playbook: aprs.yml
 - import_playbook: btmon.yml
 - import_playbook: flowers.yml
-- import_playbook: homeassistant.yml
 - import_playbook: rtlsdr.yml
+- import_playbook: octopi.yml
 - import_playbook: thor.yml
