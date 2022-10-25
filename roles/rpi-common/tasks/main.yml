@@ -51,11 +51,11 @@
     enabled: yes
 
 # copy ssh key to pi user
-- name: copy my ssh key to pi user
-  authorized_key:
-    user: pi
-    state: present
-    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+# - name: copy my ssh key to pi user
+#   authorized_key:
+#     user: pi
+#     state: present
+#     key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
 # - debug:
 #    msg: 

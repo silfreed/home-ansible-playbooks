@@ -45,3 +45,45 @@
     ansible.builtin.include_role:
       name: mkthordocker
       vars_from: unifi-poller
+
+  - name: "Promtail host journald config"
+    become: true
+    template:
+      src: promtail-journald_config.yml.j2
+      dest: "/etc/promtail/config.yml"
+      mode: "0644"
+      owner: root
+      group: root
+
+  - name: "Promtail log shipping"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: promtail-journald
+
+  - name: "syslog-ng to promtail shipping"
+    become: true
+    template:
+      src: syslog-ng_syslog-to-loki.conf.j2
+      dest: "/etc/promtail/syslogng-loki.conf"
+      mode: "0644"
+      owner: root
+      group: root
+
+  - name: "syslog-ng to promtail"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: syslog-ng_syslog-to-loki
+
+  - name: "Promtail syslog shipping"
+    become: true
+    template:
+      src: promtail-syslog_config.yml.j2
+      dest: "/etc/promtail/syslog-config.yml"
+      mode: "0644"
+      owner: root
+      group: root
+
+  - name: "Promtail syslog log shipping"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: promtail-syslog

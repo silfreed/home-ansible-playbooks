@@ -1,0 +1,12 @@
+---
+name: syslog-ng_syslog-to-loki
+docker_hub_image: balabit/syslog-ng:latest
+description: "Syslog-ng forwarding of syslog messages to loki"
+docker_ports:
+  514: 514
+  601: 601
+docker_vols:
+  "/etc/promtail/syslogng-loki.conf": "/etc/syslog-ng/syslog-ng.conf"
+docker_options: |
+  --network=lan5 \
+  --ip=192.168.0.202 \

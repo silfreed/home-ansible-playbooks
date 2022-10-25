@@ -1,8 +1,5 @@
-[[outputs.influxdb]]
-  urls = ["http://192.168.0.15:8086"]
-  database = "telegraf"
-  ## HTTP Basic Auth
-  username = "telegraf"
-  password = "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section="THOR", field='influxdb telegraf pass') }}"
-
-
+[[outputs.influxdb_v2]]
+  urls = ["http://influxdb:8086"]
+  token = "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section="THOR", field='influxdb telegraf token') }}"
+  organization = "hkroad"
+  bucket = "8dc3804c298f0ae8"

@@ -1,22 +1,9 @@
 [source]
 serial_port = /dev/ttyUSB0
 
-[mysql]
-mysql_out = false
-mysql_host = {{ mysql_host }}
-mysql_user = {{ mysql_user }}
-mysql_passwd = {{ mysql_pass }}
-mysql_insert_period = 10
-
-[openenergymonitor]
-oem_out=true
-oem_token={{ oem_token }}
-oem_url=https://emoncms.org/input/post
-
-
 [influxdb]
 influxdb_out = true
-influxdb_host = 192.168.0.15
+influxdb_host = influxdb
 influxdb_username = btmon
 influxdb_password = {{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb btmon pass') }}
 influxdb_database = btmon
@@ -30,5 +17,22 @@ influxdb_map = volts,volts,
   500167_aux3_ws,aux3,
   500167_aux4_ws,aux4,
   500167_aux5_ws,aux5
+#influxdb_tags = key1,value1,key2,value2
 influxdb_db_schema = counters
 
+#2022/09/10 10:19:46: Serial: 500167
+#2022/09/10 10:19:46: Counter: 0
+#2022/09/10 10:19:46: Voltage:               117.70V
+#2022/09/10 10:19:46: Ch1 Current:            44.94A
+#2022/09/10 10:19:46: Ch2 Current:             0.40A
+#2022/09/10 10:19:46: Ch1 Watts:           122566.351081KWh ( 5516W)
+#2022/09/10 10:19:46: Ch1 Positive Watts:  122557.412478KWh ( 5516W)
+#2022/09/10 10:19:46: Ch1 Negative Watts:     -8.938603KWh (    0W)
+#2022/09/10 10:19:46: Ch2 Watts:            3148.656368KWh (   53W)
+#2022/09/10 10:19:46: Ch2 Positive Watts:   3154.835820KWh (   53W)
+#2022/09/10 10:19:46: Ch2 Negative Watts:      6.179451KWh (    0W)
+#2022/09/10 10:19:46: Aux1 Watts:            614.958403KWh (    0W)
+#2022/09/10 10:19:46: Aux2 Watts:            727.675934KWh (    1W)
+#2022/09/10 10:19:46: Aux3 Watts:           1020.806749KWh (  241W)
+#2022/09/10 10:19:46: Aux4 Watts:              0.811928KWh (    0W)
+#2022/09/10 10:19:46: Aux5 Watts:              0.618425KWh (    0W)
