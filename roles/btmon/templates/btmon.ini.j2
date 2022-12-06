@@ -5,7 +5,7 @@ serial_port = /dev/ttyUSB0
 influxdb_out = true
 influxdb_host = influxdb
 influxdb_username = btmon
-influxdb_password = {{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb btmon pass') }}
+influxdb_password = {{ lookup('community.general.onepassword', 'HKRoad Ansible Passwords', section='thor', field='influxdb btmon pass') }}
 influxdb_database = btmon
 influxdb_measurement = energy
 influxdb_mode = row

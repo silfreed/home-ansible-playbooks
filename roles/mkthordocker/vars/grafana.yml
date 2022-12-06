@@ -16,8 +16,8 @@ docker_env:
   GF_SMTP_FROM_ADDRESS: grafana@home.silfreed.net
   GF_SMTP_HOST: smtp.fastmail.com:995
   GF_SMTP_SKIP_VERIFY: true
-  GF_SMTP_USER: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='grafana smtp user') }}"
-  GF_SMTP_PASSWORD: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='grafana smtp pass') }}"
+  GF_SMTP_USER: "{{ lookup('community.general.onepassword', 'HKRoad Ansible Passwords', section='thor', field='grafana smtp user') }}"
+  GF_SMTP_PASSWORD: "{{ lookup('community.general.onepassword', 'HKRoad Ansible Passwords', section='thor', field='grafana smtp pass') }}"
 docker_ports:
   3000: 3000
 docker_vols:

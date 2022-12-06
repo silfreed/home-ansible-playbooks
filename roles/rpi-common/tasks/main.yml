@@ -60,7 +60,7 @@
 # - debug:
 #    msg: 
 #     - "hostname: {{ hostname | upper}}"
-#     - "password: {{ lookup('onepassword', 'HKRoad Ansible Passwords', section=(hostname | upper), field='pi') }}"
+#     - "password: {{ lookup('community.general.onepassword', 'HKRoad Ansible Passwords', section=(hostname | upper), field='pi') }}"
 #   tags: password
 
 # change pi user password
@@ -73,5 +73,5 @@
     password: "{{ item.password }}"
   with_items:
     - { user: 'pi', password: "{{ \
-      lookup('onepassword', 'HKRoad Ansible Passwords', section=(hostname | upper), field='pi') \
+      lookup('community.general.onepassword', 'HKRoad Ansible Passwords', section=(hostname | upper), field='pi') \
         | password_hash('sha512', 65534 | random(seed=hostname) | string) }}"}

@@ -1,5 +1,5 @@
 [[outputs.influxdb_v2]]
   urls = ["http://influxdb:8086"]
-  token = "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section="THOR", field='influxdb telegraf token') }}"
+  token = "{{ lookup('community.general.onepassword', 'HKRoad Ansible Passwords', section="thor", field='influxdb telegraf token') }}"
   organization = "hkroad"
   bucket = "8dc3804c298f0ae8"
