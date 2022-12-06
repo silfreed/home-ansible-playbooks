@@ -1,0 +1,28 @@
+---
+# docker run -d
+# -p 8000:8000 -p 9443:9443
+# --name portainer
+# --restart=always
+# -v /var/run/docker.sock:/var/run/docker.sock
+# -v portainer_data:/data
+# portainer/portainer-ce:latest
+name: portainer
+docker_hub_image: portainer/portainer-ce:latest
+description: "Portainer.io"
+lvm:
+  - name: portainer_data
+    size: 50G
+    vg: 12tb_2020
+    user: portainer
+docker_ports:
+  8000: 8000
+  9443: 9443
+docker_vols:
+  "/etc/passwd": "/etc/passwd"
+  "/etc/group": "/etc/group"
+  "/var/run/docker.sock": "/var/run/docker.sock"
+  "/mnt/portainer_data": "/data"
+docker_options: |
+  --network=lan5 \
+  --ip=192.168.0.204 \
+  --user=449:445 \

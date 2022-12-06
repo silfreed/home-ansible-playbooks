@@ -16,6 +16,11 @@
       name: mkthordocker
       vars_from: grafana
 
+  - name: "portainer docker"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: portainer
+
   - name: "influxdb docker"
     ansible.builtin.include_role:
       name: mkthordocker
