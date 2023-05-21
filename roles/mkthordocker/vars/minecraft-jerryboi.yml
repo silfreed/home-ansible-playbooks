@@ -1,0 +1,27 @@
+---
+name: minecraft-jerryboi
+docker_hub_image: itzg/minecraft-server
+description: "Minecraft Jerryboi Container"
+lvm:
+  - name: minecraftjb
+    size: 50G
+    vg: 500gb_2021_ssd
+    mount_options: discard
+docker_env:
+  TZ: America/New_York
+  # VERSION: SNAPSHOT
+  MEMORY: 2G
+  EULA: TRUE
+  TYPE: PAPER
+  MOTD: "JerryBoi 2023 Minecraft Server"
+docker_ports:
+  19132: 19132
+  25565: 25565
+docker_vols:
+  "/etc/passwd": "/etc/passwd"
+  "/etc/group": "/etc/group"
+  "/mnt/minecraftjb/paperserver": "/data"
+  "/mnt/minecraftjb/paperplugins": "/plugins"
+docker_options: |
+  --network=lan5 \
+  --ip=192.168.0.205 \

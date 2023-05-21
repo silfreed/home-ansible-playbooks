@@ -31,6 +31,14 @@
       name: mkthordocker
       vars_from: minecraft-survival
 
+  - name: "minecraft jerryboi docker"
+    tags: minecraft-jerryboi
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: minecraft-jerryboi
+      apply:
+        tags: minecraft-jerryboi
+
   - name: "newrelic cpm docker"
     ansible.builtin.include_role:
       name: mkthordocker
