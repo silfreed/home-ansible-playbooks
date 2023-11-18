@@ -1,5 +1,7 @@
 ---
 name: plexmediaserver
+state: stopped
+enabled: no
 docker_hub_image: plexinc/pms-docker
 description: "Plex Media Server Container"
 lvm:

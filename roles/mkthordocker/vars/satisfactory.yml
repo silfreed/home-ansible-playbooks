@@ -1,0 +1,28 @@
+---
+name: satisfactory
+docker_hub_image: wolveix/satisfactory-server:latest
+description: "Satisfactory Game Server"
+# TODO: set owner for directories to "steam" user
+lvm:
+  - name: steam
+    size: 200G
+    vg: 12tb_2020
+  - name: satisfactory
+    size: 50G
+    vg: 500gb_2021_ssd
+    mount_options: discard
+docker_env:
+  MAXPLAYERS: 4
+docker_vols:
+  "/mnt/steam": "/home/steam/Steam"
+  "/mnt/satisfactory": "/config"
+docker_options: |
+  --network=lan5 \
+  --ip=192.168.0.206 \
+  --memory-reservation=12G \
+  --memory 16G \
+  --env PGID=1000 \
+  --env PUID=1000 \
+  -p 7777:7777/udp \
+  -p 15000:15000/udp \
+  -p 15777:15777/udp \

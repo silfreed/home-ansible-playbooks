@@ -5,6 +5,6 @@
 #     docker_env:
 #       INFLUX_URL: "http://192.168.0.15:8086"
 #       INFLUX_USER: "telegraf"
-#       INFLUX_PASS: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb telegraf pass') }}"
+#       INFLUX_PASS: "{{ lookup('community.general.onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb telegraf pass') }}"
 #       INFLUX_DB: "cablemodem"
-#       MODEM_PASSWORD: "{{ lookup('onepassword', 'Netgear CM600 Cable Modem', field='password') }}"
+#       MODEM_PASSWORD: "{{ lookup('community.general.onepassword', 'Netgear CM600 Cable Modem', field='password') }}"

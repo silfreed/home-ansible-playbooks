@@ -87,3 +87,8 @@
     ansible.builtin.include_role:
       name: mkthordocker
       vars_from: promtail-syslog
+
+  - name: "Satisfactory Game Server"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: satisfactory
