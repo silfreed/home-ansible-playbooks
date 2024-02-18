@@ -1,9 +1,9 @@
 ---
 - hosts: flowers
-  remote_user: pi
-  connection: paramiko # because we need to specify a password on the first run
+  remote_user: silfreed
+  #  connection: paramiko # because we need to specify a password on the first run
   vars:
-    ansible_ssh_pass: raspberry # hopefully just for the first run
+    #ansible_ssh_pass: raspberry # hopefully just for the first run
     hostname: rpi-flowers
     domain: home.silfreed.net
   roles:
