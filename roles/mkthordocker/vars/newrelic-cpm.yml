@@ -3,7 +3,7 @@ name: newrelic-cpm
 docker_hub_image: quay.io/newrelic/synthetics-minion:latest
 description: "New Relic Synthetics Private Minion"
 docker_env:
-  MINION_PRIVATE_LOCATION_KEY: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='newrelic cpm key') }}"
+  MINION_PRIVATE_LOCATION_KEY: "{{ lookup('community.general.onepassword', 'HKRoad Ansible Passwords', section='THOR', field='newrelic cpm key') }}"
 docker_options: |
   -v /tmp:/tmp:rw \
   -v /var/run/docker.sock:/var/run/docker.sock:rw \

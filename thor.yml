@@ -6,11 +6,6 @@
     - telegraf
 
   tasks:
-  - name: "ark survival server docker"
-    ansible.builtin.include_role:
-      name: mkthordocker
-      vars_from: arkserver
-
   - name: "grafana docker"
     ansible.builtin.include_role:
       name: mkthordocker
@@ -35,11 +30,6 @@
     ansible.builtin.include_role:
       name: mkthordocker
       vars_from: newrelic-cpm
-
-  - name: "plex media server docker"
-    ansible.builtin.include_role:
-      name: mkthordocker
-      vars_from: plexmediaserver
 
   - name: "unifi-poller docker"
     ansible.builtin.include_role:
@@ -87,3 +77,9 @@
     ansible.builtin.include_role:
       name: mkthordocker
       vars_from: promtail-syslog
+
+  - name: "Satisfactory Game Server"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: satisfactory
+

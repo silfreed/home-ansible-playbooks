@@ -3,5 +3,5 @@
 #        description: "ships awair stats to influxdb"
 #          INFLUX_URL: "http://192.168.0.15:8086"
 #          INFLUX_USER: "awair"
-#          INFLUX_PASS: "{{ lookup('onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb awair pass') }}"
+#          INFLUX_PASS: "{{ lookup('community.general.onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb awair pass') }}"
 #          INFLUX_DB: "cablemodem"

@@ -1,3 +1,7 @@
 # inventory files
 production
+production.ini
 staging
+staging.ini
+# misc
+.vscode
