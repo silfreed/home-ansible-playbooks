@@ -1,0 +1,10 @@
+---
+- name: hkrd base packages
+  tags: hkrd
+  become: true
+  dnf:
+    state: latest
+    pkg:
+      - vim-enhanced
+      - htop
+      - dstat

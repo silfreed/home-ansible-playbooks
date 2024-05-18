@@ -1,5 +1,5 @@
 ---
-- hosts: rpi-octoprint
+- hosts: octoprint
   remote_user: pi
   # connection: paramiko # because we need to specify a password on the first run
   vars:
