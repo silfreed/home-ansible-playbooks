@@ -1,0 +1,8 @@
+---
+- name: Ceph base install
+  tags: ceph
+  become: true
+  dnf:
+    state: latest
+    pkg:
+      - cephadm
