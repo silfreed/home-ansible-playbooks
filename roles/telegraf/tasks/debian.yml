@@ -1,14 +1,15 @@
 ---
 - name: install apt repository key
   become: true
-  apt_key:
-    url: https://repos.influxdata.com/influxdb.key
-    state: present
+  ansible.builtin.apt_key:
+    #id: 393e8779c89ac8d958f81f942f9ad7fb82a25e133faddaf92e15b16e6ac9ce4c
+    url: https://repos.influxdata.com/influxdata-archive_compat.key
+    keyring: /etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg
 
 - name: install apt repository
   become: true
   apt_repository:
-    repo: 'deb https://repos.influxdata.com/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} stable'
+    repo: 'deb [signed-by=/etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg] https://repos.influxdata.com/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} stable'
     state: present
 
 - name: install telegraf packages
