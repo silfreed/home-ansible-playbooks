@@ -1,21 +1,47 @@
 ---
 - hosts: rtlsdr
-  remote_user: pi
-  connection: paramiko # because we need to specify a password on the first run
+  remote_user: silfreed
   vars:
-    ansible_ssh_pass: raspberry # hopefully just for the first run
-    hostname: rpi-rtlsdr
-    domain: home.silfreed.net
+    # ansible_ssh_pass: raspberry # hopefully just for the first run
+    hostname: rpi-rtlsdr0
+    domain: hkrd.pl
   roles:
+    - hkrd
     - rpi-common
     - telegraf
 
   tasks:
     - name: rtlsdr packages
       tags: rtlsdr
-      apt:
+      become: true
+      package:
         state: latest
         pkg:
           - git
           - rtl-sdr
           - golang
+
+    - name: rtlsdr TCP daemon
+      tags: rtlsdr
+      become: true
+      blockinfile:
+        path: /etc/systemd/system/rtlsdr.service
+        block: |
+          [Unit]
+          Description=RTL-SDR Server
+          After=network.target
+
+          [Service]
+          ExecStart=/usr/bin/rtl_tcp -a 0.0.0.0
+          #WorkingDirectory=/home/pi
+          StandardOutput=inherit
+          StandardError=inherit
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: start rtlsdr service
+      tags: rtlsdr
+      become: true
+      systemd: state=started name=rtlsdr daemon_reload=yes
