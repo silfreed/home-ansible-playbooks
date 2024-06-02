@@ -2,9 +2,9 @@
 - name: hkrd base packages
   tags: hkrd
   become: true
-  dnf:
+  ansible.builtin.package:
     state: latest
     pkg:
-      - vim-enhanced
+      - "{{ ( ansible_facts['distribution'] == 'redhat' ) | ternary ('vim-enhanced', 'vim') }}"
       - htop
       - dstat
