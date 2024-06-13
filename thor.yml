@@ -22,6 +22,15 @@
       name: mkthordocker
       vars_from: loki
 
+  - name: "Loki configuration"
+    become: true
+    template:
+      src: loki.yaml.j2
+      dest: "/mnt/loki/loki.yaml"
+      mode: "0644"
+      owner: root
+      group: root
+
   - name: "minecraft survival docker"
     ansible.builtin.include_role:
       name: mkthordocker
