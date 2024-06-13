@@ -13,6 +13,7 @@ docker_env:
   INFLUXDB_HTTP_AUTH_ENABLED: true
   INFLUXDB_ADMIN_USER: admin
   INFLUXDB_ADMIN_PASSWORD: "{{ lookup('community.general.onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb admin pass') }}"
+  INFLUXD_LOG_LEVEL: error
 docker_ports:
   8086: 8086
 docker_vols:
