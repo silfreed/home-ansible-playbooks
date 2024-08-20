@@ -1,0 +1,10 @@
+---
+name: vuegraf
+docker_hub_image: jertel/vuegraf:latest
+description: "Vuegraf Container"
+lvm:
+  - name: vuegraf
+    size: 10G
+    vg: 12tb_2020
+docker_vols:
+  /mnt/vuegraf: /opt/vuegraf/conf

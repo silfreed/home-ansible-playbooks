@@ -1,0 +1,16 @@
+{
+    "influxDb": {
+        "version": 2,
+        "url": "http://influxdb.hkrd.pl:8086",
+        "org": "hkroad",
+        "bucket": "vuegraf",
+        "token": "{{ lookup('community.general.onepassword', 'HKRoad Ansible Passwords', section='THOR', field='influxdb vuegraf token') }}"
+    },
+    "accounts": [
+        {
+            "name": "Primary Residence",
+            "email": "{{ lookup('community.general.onepassword', 'Emporia Energy', field='username') }}",
+            "password": "{{ lookup('community.general.onepassword', 'Emporia Energy', field='password') }}"
+        }
+    ]
+}
