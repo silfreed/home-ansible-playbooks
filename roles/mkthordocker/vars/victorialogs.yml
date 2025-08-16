@@ -1,0 +1,31 @@
+---
+name: victorialogs
+docker_hub_image: docker.io/victoriametrics/victoria-logs
+description: "VictoriaLogs Container"
+lvm:
+  - name: victorialogs
+    size: 200G
+    vg: 12tb_2020
+    user: victorialogs
+docker_env:
+  VLOG_SYSLOG_LISTENADDR_TCP: ":9514"
+  VLOG_SYSLOG_LISTENADDR_UDP: ":9514"
+docker_vols:
+  "/etc/passwd": "/etc/passwd"
+  "/etc/group": "/etc/group"
+  "/mnt/victorialogs": "/victoria-logs-data"
+docker_options:
+  - --network=lan5
+  - --ip=192.168.0.195
+  - -p 9428:9428
+  - -p 9514:9514/tcp
+  - -p 9514:9514/udp
+  - --user=445:321
+docker_cli_opts:
+  - -envflag.enable
+  - -syslog.listenAddr.tcp=:9514
+  - -syslog.useRemoteIP.tcp=true
+  - -syslog.useLocalTimestamp.tcp
+  - -syslog.listenAddr.udp=:9514
+  - -syslog.useRemoteIP.udp=true
+  - -syslog.useLocalTimestamp.udp

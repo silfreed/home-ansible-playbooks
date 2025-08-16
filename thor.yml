@@ -1,5 +1,6 @@
 ---
-- hosts: thor
+- name: "Tasks for Thor"
+  hosts: thor
   remote_user: silfreed
 
   roles:
@@ -7,72 +8,72 @@
     - telegraf
 
   tasks:
-  - name: "grafana docker"
-    ansible.builtin.include_role:
-      name: mkthordocker
-      vars_from: grafana
+    - name: "Docker container for Grafana"
+      ansible.builtin.include_role:
+        name: mkthordocker
+        vars_from: grafana
 
-  - name: "influxdb docker"
-    ansible.builtin.include_role:
-      name: mkthordocker
-      vars_from: influxdb
+    - name: "Docker container for influxdb"
+      ansible.builtin.include_role:
+        name: mkthordocker
+        vars_from: influxdb
 
-  - name: "loki docker"
-    ansible.builtin.include_role:
-      name: mkthordocker
-      vars_from: loki
+    - name: "Docker container for loki"
+      ansible.builtin.include_role:
+        name: mkthordocker
+        vars_from: loki
 
-  - name: "Loki configuration"
-    become: true
-    template:
-      src: loki.yaml.j2
-      dest: "/mnt/loki/loki.yaml"
-      mode: "0644"
-      owner: root
-      group: root
+    - name: "Loki configuration"
+      become: true
+      ansible.builtin.template:
+        src: loki.yaml.j2
+        dest: "/mnt/loki/loki.yaml"
+        mode: "0644"
+        owner: root
+        group: root
 
-  - name: "Docker container for vuegraf"
-    ansible.builtin.include_role:
-      name: mkthordocker
-      vars_from: vuegraf
+    - name: "Docker container for vuegraf"
+      ansible.builtin.include_role:
+        name: mkthordocker
+        vars_from: vuegraf
 
-  - name: "Vuegraf configuration"
-    become: true
-    template:
-      src: vuegraf.json.j2
-      dest: "/mnt/vuegraf/vuegraf.json"
-      mode: "0644"
-      owner: root
-      group: root
+    - name: "Vuegraf configuration"
+      become: true
+      ansible.builtin.template:
+        src: vuegraf.json.j2
+        dest: "/mnt/vuegraf/vuegraf.json"
+        mode: "0644"
+        owner: root
+        group: root
 
-  - name: "minecraft survival docker"
-    ansible.builtin.include_role:
-      name: mkthordocker
-      vars_from: minecraft-survival
+    - name: "Docker container for minecraft survival"
+      ansible.builtin.include_role:
+        name: mkthordocker
+        vars_from: minecraft-survival
 
-  - name: "docker container for newrelic synthetics job manager"
-    ansible.builtin.include_role:
-      name: mkthordocker
-      vars_from: newrelic-synthetics-job-manager
+    - name: "Docker container for  newrelic synthetics job manager"
+      ansible.builtin.include_role:
+        name: mkthordocker
+        vars_from: newrelic-synthetics-job-manager
 
-  - name: "unifi-poller docker"
-    ansible.builtin.include_role:
-      name: mkthordocker
-      vars_from: unifi-poller
+    - name: "Docker container for unifi-poller"
+      ansible.builtin.include_role:
+        name: mkthordocker
+        vars_from: unifi-poller
 
-  - name: "Promtail host journald config"
-    become: true
-    template:
-      src: promtail-journald_config.yml.j2
-      dest: "/etc/promtail/config.yml"
-      mode: "0644"
-      owner: root
-      group: root
+    - name: "Promtail host journald config"
+      become: true
+      ansible.builtin.template:
+        src: promtail-journald_config.yml.j2
+        dest: "/etc/promtail/config.yml"
+        mode: "0644"
+        owner: root
+        group: root
 
-  - name: "Promtail log shipping"
-    ansible.builtin.include_role:
-      name: mkthordocker
-      vars_from: promtail-journald
+    - name: "Promtail log shipping"
+      ansible.builtin.include_role:
+        name: mkthordocker
+        vars_from: promtail-journald
 
   # - name: "trunk-recorder docker"
   #   ansible.builtin.include_role:
@@ -88,3 +89,7 @@
   #     owner: root
   #     group: root
 
+    - name: "Docker container for victorialogs"
+      ansible.builtin.include_role:
+        name: mkthordocker
+        vars_from: victorialogs

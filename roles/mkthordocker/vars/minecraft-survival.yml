@@ -17,6 +17,6 @@ docker_vols:
   "/etc/passwd": "/etc/passwd"
   "/etc/group": "/etc/group"
   "/mnt/minecraft/survival": "/data"
-docker_options: |
-  --network=lan5 \
-  --ip=192.168.0.194 \
+docker_options:
+  - --network=lan5
+  - --ip=192.168.0.194

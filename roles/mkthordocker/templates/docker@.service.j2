@@ -12,25 +12,34 @@ ExecStartPre=-/usr/bin/docker stop %i
 ExecStartPre=-/usr/bin/docker rm %i
 ExecStartPre=/usr/bin/docker pull {{ docker_hub_image }}
 ExecStart=/usr/bin/docker run --rm --name %i \
+{% set docker_cmd_output = [] -%}
 {% if docker_options is defined %}
-  {{ docker_options|indent(width=2) }}
+{%   for dockopt in docker_options %}
+{{-     docker_cmd_output.append(dockopt|string) -}}
+{%   endfor %}
 {% endif %}
 {% if docker_ports is defined %}
-{% for k,v in docker_ports.items() %}
-  -p {{ k }}:{{ v }} \
-{% endfor %}
+{%   for k,v in docker_ports.items() %}
+{{-     docker_cmd_output.append("-p " + k|string + ":" + v|string) -}}
+{%   endfor %}
 {% endif %}
 {% if docker_env is defined %}
-{% for k,v in docker_env.items() %}
-  -e {{ k }}={{ v }} \
-{% endfor %}
+{%   for k,v in docker_env.items() %}
+{{-     docker_cmd_output.append("-e " + k|string + "=" + v|string) -}}
+{%   endfor %}
 {% endif %}
 {% if docker_vols is defined %}
-{% for k,v in docker_vols.items() %}
-  -v {{ k }}:{{ v }} \
-{% endfor %}
+{%   for k,v in docker_vols.items() %}
+{{-    docker_cmd_output.append("-v " + k|string + ":" + v|string) -}}
+{%   endfor %}
 {% endif %}
-  {{ docker_hub_image }}
+{{- docker_cmd_output.append(docker_hub_image) -}}
+{% if docker_cli_opts is defined %}
+{%   for dcliopts in docker_cli_opts %}
+{{-     docker_cmd_output.append(dcliopts|string) -}}
+{%   endfor %}
+{% endif %}
+  {{ docker_cmd_output | join(" \\"+"\n") | indent(width=2) }}
 
 [Install]
 WantedBy=multi-user.target

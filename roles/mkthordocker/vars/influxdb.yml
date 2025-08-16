@@ -21,8 +21,8 @@ docker_vols:
   "/etc/group": "/etc/group"
   "/mnt/influxdb/influxdb2": "/var/lib/influxdb2"
   "/mnt/influxdb/influxdb2-config": "/etc/influxdb2"
-docker_options: |
-  --network=lan5 \
-  --ip=192.168.0.200 \
-  --user=454:451 \
-  --ulimit nofile=50000:50000 \
+docker_options:
+  - --network=lan5
+  - --ip=192.168.0.200
+  - --user=454:451
+  - --ulimit nofile=50000:50000

@@ -18,7 +18,7 @@ docker_vols:
   "/etc/group": "/etc/group"
   "/mnt/loki": "/loki"
   "/mnt/loki/loki.yaml": "/etc/loki/local-config.yaml"
-docker_options: |
-  --network=lan5 \
-  --ip=192.168.0.201 \
-  --user=451:447 \
+docker_options:
+  - --network=lan5
+  - --ip=192.168.0.201
+  - --user=451:447

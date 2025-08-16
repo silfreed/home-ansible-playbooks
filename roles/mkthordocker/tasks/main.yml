@@ -80,10 +80,10 @@
 #   debug:
 #     var: lvs.report[0].lv|map(attribute='lv_name')|list
 
-- name: make lvm volume
+- name: Make lvm volume
   tags: mklvm
   become: true
-  command: lvcreate -L {{ item.size }} {{ item.vg }} -n {{ item.name }}
+  ansible.builtin.command: lvcreate -L {{ item.size }} {{ item.vg }} -n {{ item.name }} --wipesignatures y --yes
   # debug:
   #   msg: "lvcreate -L {{ item.size }} {{ item.vg }} -n {{ item.name }}"
   loop: "{{ lvm }}"
@@ -107,20 +107,21 @@
 - name: Create and mount lvm volume
   become: true
   ansible.posix.mount:
-    src: /dev/mapper/{{ item.vg }}-{{ item.name|replace('-','--') }}
+    src: /dev/mapper/{{ item.vg }}-{{ item.name | replace('-', '--') }}
     path: /mnt/{{ item.name }}
     opts: defaults{{ "," + item.mount_options if item.mount_options is defined}}
     state: mounted
     fstype: ext4
+    passno: 2
   loop: "{{ lvm }}"
   loop_control:
     label: "{{ item.name }}"
   # TODO: notify a handler to reload the docker instance
   when: lvm is defined
 
-- name: create docker systemd unit file
+- name: Create docker systemd unit file
   become: true
-  template:
+  ansible.builtin.template:
     src: docker@.service.j2
     dest: "/etc/systemd/system/docker@{{ name }}.service"
     mode: "0644"

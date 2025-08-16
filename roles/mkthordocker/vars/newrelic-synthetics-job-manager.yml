@@ -4,5 +4,5 @@ docker_hub_image: newrelic/synthetics-job-manager:latest
 description: "New Relic Synthetics Job Manager"
 docker_env:
   PRIVATE_LOCATION_KEY: "{{ lookup('community.general.onepassword', 'HKRoad Ansible Passwords', section='THOR', field='newrelic cpm key') }}"
-docker_options: |
-  -v /var/run/docker.sock:/var/run/docker.sock:rw \
+docker_options:
+  - -v /var/run/docker.sock:/var/run/docker.sock:rw
