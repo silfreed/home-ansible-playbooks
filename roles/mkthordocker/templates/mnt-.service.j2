@@ -2,7 +2,7 @@
 Description=Mount {{ item.vg }} {{ item.name }} 
 
 [Mount]
-What=/dev/mapper/{{ item.vg }}-{{ item.name }}
+What=/dev/mapper/{{ item.vg }}-{{ item.name|replace('-','--') }}
 Where=/mnt/{{ item.name }}
 Type=ext4
 Options=defaults{{ "," + item.mount_options if item.mount_options is defined}}
