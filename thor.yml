@@ -31,15 +31,29 @@
       owner: root
       group: root
 
+  - name: "Docker container for vuegraf"
+    ansible.builtin.include_role:
+      name: mkthordocker
+      vars_from: vuegraf
+
+  - name: "Vuegraf configuration"
+    become: true
+    template:
+      src: vuegraf.json.j2
+      dest: "/mnt/vuegraf/vuegraf.json"
+      mode: "0644"
+      owner: root
+      group: root
+
   - name: "minecraft survival docker"
     ansible.builtin.include_role:
       name: mkthordocker
       vars_from: minecraft-survival
 
-  - name: "newrelic cpm docker"
+  - name: "docker container for newrelic synthetics job manager"
     ansible.builtin.include_role:
       name: mkthordocker
-      vars_from: newrelic-cpm
+      vars_from: newrelic-synthetics-job-manager
 
   - name: "unifi-poller docker"
     ansible.builtin.include_role:
@@ -60,31 +74,17 @@
       name: mkthordocker
       vars_from: promtail-journald
 
-  - name: "syslog-ng to promtail shipping"
-    become: true
-    template:
-      src: syslog-ng_syslog-to-loki.conf.j2
-      dest: "/etc/promtail/syslogng-loki.conf"
-      mode: "0644"
-      owner: root
-      group: root
+  # - name: "trunk-recorder docker"
+  #   ansible.builtin.include_role:
+  #     name: mkthordocker
+  #     vars_from: trunk-recorder
 
-  - name: "syslog-ng to promtail"
-    ansible.builtin.include_role:
-      name: mkthordocker
-      vars_from: syslog-ng_syslog-to-loki
-
-  - name: "Promtail syslog shipping"
-    become: true
-    template:
-      src: promtail-syslog_config.yml.j2
-      dest: "/etc/promtail/syslog-config.yml"
-      mode: "0644"
-      owner: root
-      group: root
-
-  - name: "Promtail syslog log shipping"
-    ansible.builtin.include_role:
-      name: mkthordocker
-      vars_from: promtail-syslog
+  # - name: "trunk-recorder configuration"
+  #   become: true
+  #   template:
+  #     src: trunk-recorder/config.json.j2
+  #     dest: /mnt/trunk-recorder/config.json
+  #     mode: "0644"
+  #     owner: root
+  #     group: root
 
