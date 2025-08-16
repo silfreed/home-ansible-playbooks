@@ -6,6 +6,6 @@ lvm:
   - name: vuegraf
     size: 10G
     vg: 12tb_2020
-    mode: 0755
+    mode: "0755"
 docker_vols:
   /mnt/vuegraf: /opt/vuegraf/conf
