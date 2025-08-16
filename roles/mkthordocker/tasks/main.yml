@@ -11,6 +11,24 @@
 #     - "DVol: {{ docker_vols|default(omit) }}"
 #     - "DOpt: {{ docker_options|default(omit) }}"
 
+# https://opendev.org/openstack/ansible-role-systemd_mount/src/branch/master/tasks/systemd_mounts.yml
+# - name: Escape mount service file name
+#   command: systemd-escape -p --suffix="mount" "/mnt/{{ item.name }}"
+#   changed_when: false
+#   register: mount_service_name
+#   # set_fact:
+#   #   lvm: "{{ lvm:combine(item) }}"
+#   # FIXME: ^ How do I register a new key/value into a dictionary defined from the yaml
+#   # that will persist across the rest of the role
+#   loop: "{{ lvm }}"
+#   loop_control:
+#     label: "{{ item.name }}"
+#   when: lvm is defined and 'user' in item
+
+# - name: Debug LVM update for systemd escaping
+#   debug:
+#     var: lvm
+  
 - name: create user for LVM mount
   become: true
   user:
@@ -76,7 +94,7 @@
 - name: format lvm volume
   tags: mklvm
   become: true
-  command: mke2fs /dev/{{ item.vg }}/{{ item.name }}
+  command: mke2fs /dev/{{ item.vg }}/{{ item.name|replace('-','--') }}
   # debug:
   #   msg: "mke2fs /dev/{{ item.vg }}/{{ item.name }}"
   loop: "{{ lvm }}"
@@ -86,14 +104,14 @@
 
 # TODO: detect if LVM volume size is different from configured
 
-- name: create LVM mountpoint systemd unit file
+- name: Create and mount lvm volume
   become: true
-  template:
-    src: mnt-.service.j2
-    dest: "/etc/systemd/system/mnt-{{ item.name }}.mount"
-    mode: "0644"
-    owner: root
-    group: root
+  ansible.posix.mount:
+    src: /dev/mapper/{{ item.vg }}-{{ item.name|replace('-','--') }}
+    path: /mnt/{{ item.name }}
+    opts: defaults{{ "," + item.mount_options if item.mount_options is defined}}
+    state: mounted
+    fstype: ext4
   loop: "{{ lvm }}"
   loop_control:
     label: "{{ item.name }}"
@@ -113,17 +131,6 @@
 - name: force systemd daemon reload when unit files change
   systemd:
     daemon_reload: yes
-
-- name: start LVM mountpoint systemd service
-  become: true
-  systemd:
-    state: started
-    enabled: yes
-    name: "mnt-{{ item.name }}.mount"
-  loop: "{{ lvm }}"
-  loop_control:
-    label: "{{ item.name }}"
-  when: lvm is defined
 
 - name: manage docker systemd unit
   become: true
