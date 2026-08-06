@@ -65,13 +65,14 @@
 
 # change pi user password
 # https://stackoverflow.com/questions/33972756/ansible-to-generate-random-passwords-automatically-for-users
-- name: set a non-default password for the "pi" account
-  tags: password
-  become: true
-  user:
-    name: "{{ item.user }}"
-    password: "{{ item.password }}"
-  with_items:
-    - { user: 'pi', password: "{{ \
-      lookup('community.general.onepassword', 'HKRoad Ansible Passwords', section=(hostname | upper), field='pi') \
-        | password_hash('sha512', 65534 | random(seed=hostname) | string) }}"}
+# FIXME only do this if the account exists
+#- name: set a non-default password for the "pi" account
+#  tags: password
+#  become: true
+#  user:
+#    name: "{{ item.user }}"
+#    password: "{{ item.password }}"
+#  with_items:
+#    - { user: 'pi', password: "{{ \
+#      lookup('community.general.onepassword', 'HKRoad Ansible Passwords', section=(hostname | upper), field='pi') \
+#        | password_hash('sha512', 65534 | random(seed=hostname) | string) }}"}
