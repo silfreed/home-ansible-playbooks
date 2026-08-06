@@ -1,0 +1,22 @@
+[Unit]
+Description=SignalK Container
+After=network-online.target
+Wants=network-online.target
+RequiresMountsFor=/mnt/signalk
+
+# https://blog.container-solutions.com/running-docker-containers-with-systemd
+[Service]
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=-/usr/bin/docker stop %i
+ExecStartPre=-/usr/bin/docker rm %i
+ExecStartPre=/usr/bin/docker pull influxdb:latest
+ExecStart=/usr/bin/docker run --rm --name %i \
+# CANNOT specify user; Dockerfile uses both "root" and "node" (uid 1000) internally
+  --network host \
+  -v /mnt/signalk/data/:/home/node/.signalk \
+  -v /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket \
+  signalk/signalk-server
+
+[Install]
+WantedBy=multi-user.target

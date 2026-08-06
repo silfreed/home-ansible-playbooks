@@ -1,0 +1,159 @@
+---
+- hosts: signalk
+  remote_user: silfreed
+  become: true
+  vars:
+    hostname: rpi-25teal-signalk
+    domain: 25teal.wrnr.io
+    # Use /boot/config.txt for older OS versions
+    rpi_config_file: /boot/firmware/config.txt
+    signalk_volume: /dev/sda1
+    signalk_mountpoint: /mnt/signalk
+  roles:
+    - rpi-common
+    #- telegraf
+    - geerlingguy.docker
+
+  tasks:
+    - name: Wifi Connection BeachinAtTheCove
+      community.general.nmcli:
+        type: wifi
+        conn_name: wifi-BeachinAtTheCove
+        ifname: wlan0
+        ssid: BeachinAtTheCove
+        wifi_sec:
+          key-mgmt: wpa-psk
+          psk: Beachin3530
+        autoconnect: true
+        state: present
+
+    - name: Wifi Connection 25teal
+      community.general.nmcli:
+        type: wifi
+        conn_name: wifi-25teal
+        ifname: wlan0
+        ssid: 25teal
+        wifi_sec:
+          key-mgmt: wpa-psk
+          psk: boatingisfun
+        autoconnect: true
+        state: present
+
+    # FIXME: lowest priority; can we have NM reconnect to higher priority wifi networks if they show up?
+#    - name: Wifi Connection WarnerMifi
+#      community.general.nmcli:
+#        type: wifi
+#        conn_name: wifi-WarnerMifi
+#        ifname: wlan0
+#        ssid: WarnerMifi
+#        wifi_sec:
+#          key-mgmt: wpa-psk
+#          psk: OnTheRoad
+#        autoconnect: true
+#        state: present
+
+
+    - name: "Add pican-m boot options"
+      ansible.builtin.blockinfile:
+        path: "{{ rpi_config_file }}"
+        block: |
+          # https://seabits.com/set-up-signal-k-and-grafana-on-raspberry-pi-with-pican-m-nmea-2000-board/
+          /boot/firmware/config.txt
+          enable_uart=1
+          dtparam=i2c_arm=on
+          dtparam=spi=on
+          dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=25
+          dtoverlay=spi-bcm2835-overlay
+      register: rpi_config_picanm_result
+
+    # force reboot so systemd unit below can setup can0
+    - name: Restart machine if needed
+      reboot:
+        msg: "Rebooting by Ansible after picam-m boot options setup"
+        connect_timeout: 5
+        reboot_timeout: 600
+        pre_reboot_delay: 0
+        post_reboot_delay: 30
+      when: rpi_config_picanm_result.changed | default(false)
+
+    - name: "Install canutils"
+      ansible.builtin.package:
+        name: can-utils
+        state: present
+
+    - name: "Install canbus systemd unit"
+      ansible.builtin.template:
+        src: can0-socket-interface.service.j2
+        dest: /etc/systemd/system/can0-socket-interface.service
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Reload systemd daemon
+
+    - name: Flush handlers to force immediate daemon-reload
+      ansible.builtin.meta: flush_handlers
+
+    - name: Ensure canbus systemd running
+      ansible.builtin.systemd_service:
+        name: can0-socket-interface.service
+        state: started
+        enabled: true
+
+    - name: "Install btrfs"
+      ansible.builtin.package:
+        name: btrfs-progs
+        state: present
+
+    - name: "Make btrfs"
+      community.general.filesystem:
+        fstype: btrfs
+        dev: "{{ signalk_volume }}"
+        state: present
+
+    - name: Create root directory for initial mounting
+      ansible.builtin.file:
+        path: "{{ signalk_mountpoint }}"
+        state: directory
+        mode: '0755'
+
+    - name: "Add fstab for /mnt/signalk"
+      become: true
+      ansible.posix.mount:
+        src: "{{ signalk_volume }}"
+        path: "{{ signalk_mountpoint }}"
+        opts: defaults,noatime,discard
+        state: mounted
+        fstype: btrfs
+        passno: 2
+
+    # NOT NEEDED - signalk dockerfile runs as both root & "node" which is UID 1000
+    # - name: "Add user"
+    #   signalk
+    #   useradd -M -d /mnt/signalk/data/ signalk
+
+    # docker install handled by geerlingguy.docker
+    # - name: "Install docker"
+
+    - name: "Install signalk systemd unit"
+      ansible.builtin.template:
+        src: signalk.service.j2
+        dest: /etc/systemd/system/signalk.service
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Reload systemd daemon
+
+    - name: Flush handlers to force immediate daemon-reload
+      ansible.builtin.meta: flush_handlers
+
+    - name: Ensure signalk systemd running
+      ansible.builtin.systemd_service:
+        name: signalk.service
+        state: started
+        enabled: true
+
+
+  handlers:
+    - name: Reload systemd daemon
+      ansible.builtin.systemd_service:
+        daemon_reload: true
