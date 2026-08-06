@@ -5,3 +5,4 @@ staging
 staging.ini
 # misc
 .vscode
+.ansible
